@@ -1,5 +1,8 @@
 package com.darkona.adventurebackpack.handlers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
@@ -20,9 +23,6 @@ import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.darkona.adventurebackpack.block.BlockSleepingBag;
 import com.darkona.adventurebackpack.common.ServerActions;
