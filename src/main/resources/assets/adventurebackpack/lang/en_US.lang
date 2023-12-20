@@ -14,6 +14,7 @@ item.adventurebackpack:inflatableBoatMotorized.name=Inflatable Boat (Motorized)
 
 ## Entity 
 entity.adventurebackpack.inflatableBoat.name=Inflatable Boat
+entity.adventurebackpack.rideableSpider.name=Rideable Spider
 
 ## Tools and consumables
 item.adventurebackpack:clockworkCrossbow.name=Clockwork Crossbow
