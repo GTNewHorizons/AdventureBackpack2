@@ -37,6 +37,8 @@ import com.darkona.adventurebackpack.common.ServerActions;
 import com.darkona.adventurebackpack.fluids.FluidEffectRegistry;
 import com.darkona.adventurebackpack.init.ModFluids;
 import com.darkona.adventurebackpack.inventory.InventoryBackpack;
+import com.darkona.adventurebackpack.reference.LoadedMods;
+import com.darkona.adventurebackpack.util.HungerOverhaulUtils;
 import com.darkona.adventurebackpack.util.Resources;
 import com.darkona.adventurebackpack.util.TipUtils;
 import com.darkona.adventurebackpack.util.Wearing;
@@ -382,6 +384,18 @@ public class ItemHose extends ItemAB {
         InventoryBackpack inventory = new InventoryBackpack(Wearing.getWearingBackpack(player));
         inventory.openInventory();
         if (entity instanceof EntityCow && !(entity instanceof EntityMooshroom)) {
+            if (LoadedMods.HUNGEROVERHAUL) {
+                NBTTagCompound tags = entity.getEntityData();
+                if (tags.hasKey("Milked")) {
+                    if (!player.worldObj.isRemote) entity.playSound(
+                            "mob.cow.hurt",
+                            0.4F,
+                            (entity.worldObj.rand.nextFloat() - entity.worldObj.rand.nextFloat()) * 0.2F + 1.0F);
+                    return false;
+                } else {
+                    tags.setInteger("Milked", HungerOverhaulUtils.getMilkedTimeout() * 60);
+                }
+            }
 
             FluidTank tank = getHoseTank(stack) == 0 ? inventory.getLeftTank() : inventory.getRightTank();
             tank.fill(new FluidStack(ModFluids.milk, BUCKET), true);

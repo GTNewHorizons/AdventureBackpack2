@@ -18,6 +18,7 @@ public final class LoadedMods {
     public static final boolean TCONSTRUCT = registerMod("TConstruct");
     public static final boolean THAUMCRAFT = registerMod("Thaumcraft");
     public static final boolean WAILA = registerMod("waila");
+    public static final boolean HUNGEROVERHAUL = registerMod("HungerOverhaul");
 
     private LoadedMods() {}
 
