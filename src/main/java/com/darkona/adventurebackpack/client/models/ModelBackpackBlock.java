@@ -290,8 +290,8 @@ public class ModelBackpackBlock extends ModelBase {
                     (tankLeftTop.rotationPointY * 0.1f + 0.05f),
                     (tankLeftTop.rotationPointZ * 0.1f + 0.15f));
             GL11.glPushMatrix();
-            state.reset();
-            state.pullLightmap();
+            state.resetInstance();
+            state.pullLightmapInstance();
             state.useNormals = true;
             RenderUtils.renderFluidCuboid(
                     tankLeft.getFluid(),
@@ -307,8 +307,8 @@ public class ModelBackpackBlock extends ModelBase {
                     (tankRightTop.rotationPointY * 0.1f + 0.05f),
                     (tankRightTop.rotationPointZ * 0.1f + 0.15f));
             GL11.glPushMatrix();
-            state.reset();
-            state.pullLightmap();
+            state.resetInstance();
+            state.pullLightmapInstance();
             state.useNormals = true;
             RenderUtils.renderFluidCuboid(
                     tankRight.getFluid(),
@@ -340,8 +340,8 @@ public class ModelBackpackBlock extends ModelBase {
                     (tankLeftTop.rotationPointY * 0.1f + 0.1f),
                     (tankLeftTop.rotationPointZ * 0.1f + 0.13f));
             // ChickenStuff
-            state.reset();
-            state.pullLightmap();
+            state.resetInstance();
+            state.pullLightmapInstance();
             state.useNormals = true;
 
             Cuboid6 left = new Cuboid6(minX, minY, minZ, maxX, maxY, maxZ);
@@ -362,8 +362,8 @@ public class ModelBackpackBlock extends ModelBase {
                     (tankRightTop.rotationPointY * 0.1f + 0.1f),
                     (tankRightTop.rotationPointZ * 0.1f + 0.13f));
             // ChickenStuff
-            state.reset();
-            state.pullLightmap();
+            state.resetInstance();
+            state.pullLightmapInstance();
             state.useNormals = true;
 
             Cuboid6 right = new Cuboid6(minX, minY, minZ, maxX, maxY, maxZ);
