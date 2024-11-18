@@ -21,4 +21,8 @@ public interface IInventoryTanks extends IAsynchronousInventory {
     boolean updateTankSlots();
 
     void dirtyTanks();
+
+    default ItemStack getParentItem() {
+        return null;
+    }
 }

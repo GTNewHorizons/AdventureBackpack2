@@ -25,6 +25,11 @@ abstract class InventoryAdventure implements IInventoryTanks {
     }
 
     @Override
+    public ItemStack getParentItem() {
+        return containerStack;
+    }
+
+    @Override
     public int getSizeInventory() {
         return inventory.length;
     }

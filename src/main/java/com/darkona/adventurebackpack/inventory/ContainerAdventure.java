@@ -55,6 +55,15 @@ public abstract class ContainerAdventure extends Container {
 
         if (source == Source.HOLDING) // used for refresh tooltips and redraw tanks content while GUI is open
         {
+            // check if parent item is gone
+            ItemStack parentItem = inventory.getParentItem();
+            if (parentItem != null) {
+                if (player.getCurrentEquippedItem() != parentItem) {
+                    player.closeScreen();
+                    return;
+                }
+            }
+
             // intentionally update container with 1 tick delay after detect changes due to visual glitches
             // in rare cases on some modded items, ex.: shift+q on blood magic lava crystals
             if (requestedUpdate && player instanceof EntityPlayerMP) {
