@@ -65,7 +65,6 @@ public class PlayerEventHandler {
     public void joinPlayer(EntityJoinWorldEvent event) {
         if (!event.world.isRemote && event.entity instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.entity;
-            LogHelper.info("Joined EntityPlayer of name: " + event.entity.getCommandSenderName());
             NBTTagCompound playerData = ServerProxy.extractPlayerProps(player.getUniqueID());
             if (playerData != null) {
                 BackpackProperty.get(player).loadNBTData(playerData);
