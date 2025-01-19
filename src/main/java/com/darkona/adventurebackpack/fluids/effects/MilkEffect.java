@@ -2,6 +2,8 @@ package com.darkona.adventurebackpack.fluids.effects;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 
@@ -16,7 +18,7 @@ public class MilkEffect extends FluidEffect {
     @Override
     public void affectDrinker(World world, Entity entity) {
         if (entity instanceof EntityPlayer) {
-            ((EntityPlayer) entity).clearActivePotions();
+            ((EntityPlayer) entity).curePotionEffects(new ItemStack(Items.milk_bucket));
         }
     }
 }
