@@ -58,7 +58,7 @@ public class RendererItemAdventureBackpack implements IItemRenderer {
             case INVENTORY:
                 Minecraft.getMinecraft().renderEngine.bindTexture(modelTexture); {
                 GL11.glPushMatrix();
-                GL11.glColor4f(1, 1, 1, 128);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
                 GL11.glPushMatrix();
                 GL11.glTranslatef(-0.5f, 0f, -0.5f);
@@ -81,7 +81,7 @@ public class RendererItemAdventureBackpack implements IItemRenderer {
             case ENTITY:
                 Minecraft.getMinecraft().renderEngine.bindTexture(modelTexture); {
                 GL11.glPushMatrix();
-                GL11.glColor4f(1, 1, 1, 128);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
                 GL11.glPushMatrix();
                 GL11.glTranslatef(0f, 1f, 0f);
@@ -105,7 +105,7 @@ public class RendererItemAdventureBackpack implements IItemRenderer {
                 Minecraft.getMinecraft().renderEngine.bindTexture(modelTexture);
 
                 GL11.glPushMatrix();
-                GL11.glColor4f(1, 1, 1, 128);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
                 GL11.glPushMatrix();
                 GL11.glTranslatef(0.8f, 0.8f, 0.0f);
@@ -132,7 +132,7 @@ public class RendererItemAdventureBackpack implements IItemRenderer {
                 Minecraft.getMinecraft().renderEngine.bindTexture(modelTexture);
 
                 GL11.glPushMatrix();
-                GL11.glColor4f(1, 1, 1, 128);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
                 GL11.glPushMatrix();
                 GL11.glTranslatef(1f, 0.8f, 0.8f);

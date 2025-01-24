@@ -34,7 +34,7 @@ public class RendererItemClockworkCrossbow implements IItemRenderer {
         switch (type) {
             case INVENTORY: {
                 GL11.glPushMatrix();
-                GL11.glColor4f(1, 1, 1, 128);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
                 GL11.glPushMatrix();
                 GL11.glTranslatef(-0.5f, -.5f, -0.5f);
@@ -56,7 +56,7 @@ public class RendererItemClockworkCrossbow implements IItemRenderer {
             case ENTITY:
                 Minecraft.getMinecraft().renderEngine.bindTexture(modelTexture); {
                 GL11.glPushMatrix();
-                GL11.glColor4f(1, 1, 1, 128);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
                 GL11.glPushMatrix();
                 GL11.glTranslatef(0f, .50f, 0f);
@@ -79,7 +79,7 @@ public class RendererItemClockworkCrossbow implements IItemRenderer {
                 Minecraft.getMinecraft().renderEngine.bindTexture(modelTexture);
 
                 GL11.glPushMatrix();
-                GL11.glColor4f(1, 1, 1, 128);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 GL11.glPushMatrix();
                 GL11.glScalef(1.2f, 1.2f, 1.2f);
 
@@ -102,7 +102,7 @@ public class RendererItemClockworkCrossbow implements IItemRenderer {
                 player = (EntityPlayer) data[1];
 
                 GL11.glPushMatrix();
-                GL11.glColor4f(1, 1, 1, 128);
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 GL11.glRotatef(180, 0, 0, 1);
                 GL11.glScalef(1.2f, 1.2f, 1.2f);
 
