@@ -187,8 +187,8 @@ public class ItemCoalJetpack extends ItemAdventure {
         if (boiling) {
             if (inv.getSteamTank().getFluidAmount() < inv.getSteamTank().getCapacity()) {
                 if (inv.getWaterTank().getFluid() != null) {
-                    int water = inv.getWaterTank().drain((temperature / 100), true).amount;
-                    inv.getSteamTank().fill(new FluidStack(FluidRegistry.getFluid("water"), water * 4), true);
+                    int steam = inv.getWaterTank().drain((temperature / 100), true).amount;
+                    inv.getSteamTank().fill(new FluidStack(FluidRegistry.getFluid("steam"), steam * 4), true);
                     inv.dirtyTanks();
                 }
             }

@@ -57,8 +57,8 @@ public class Constants {
 
         public static final int MAX_TEMPERATURE = 200;
 
-        public static final int WATER_CAPACITY = BUCKET * 6;
-        public static final int STEAM_CAPACITY = BUCKET * 12;
+        public static final int WATER_CAPACITY = BUCKET * 8;
+        public static final int STEAM_CAPACITY = BUCKET * 16;
 
         // Inventory Slots
         public static final int INVENTORY_SIZE = 3;
