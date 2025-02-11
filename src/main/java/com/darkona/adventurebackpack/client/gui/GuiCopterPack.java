@@ -66,19 +66,26 @@ public class GuiCopterPack extends GuiWithTanks {
 
         GL11.glPushMatrix();
         boolean isFilled = tank.getFluid() != null;
-        String name = isFilled ? WordUtils.capitalize(tank.getFluid().getFluid().getName()) : "None";
+        String name = isFilled ? WordUtils.capitalize(tank.getFluid().getLocalizedName()) : "None";
         String amount = isFilled ? "" + tank.getFluid().amount : "0";
         String capacity = Integer.toString(tank.getCapacity());
         int offsetY = 8;
         int offsetX = 83;
-        fontRendererObj.drawString(name, 1 + offsetX, offsetY, 0x373737, false);
-        fontRendererObj.drawString(amount, 1 + offsetX, 10 + offsetY, 0x373737, false);
-        fontRendererObj.drawString(capacity, 1 + offsetX, 20 + offsetY, 0x373737, false);
+        int textWidth = 48;
+        for (Object chunk : fontRendererObj.listFormattedStringToWidth(name, textWidth)) {
+            fontRendererObj.drawString((String) chunk, 1 + offsetX, offsetY, 0x373737, false);
+            offsetY += 10;
+        }
+        fontRendererObj.drawString(amount, 1 + offsetX, offsetY, 0x373737, false);
+        offsetY += 10;
+        fontRendererObj.drawString(capacity, 1 + offsetX, offsetY, 0x373737, false);
+        offsetY += 10;
 
         if (isFilled) {
             Float rate = GeneralReference.getFuelRate(name.toLowerCase());
             String conLev = (rate != null) ? rate.toString() : "0";
-            fontRendererObj.drawString("Consumption: " + conLev, 1 + offsetX, 40 + offsetY, 0x373737, false);
+            offsetY += 10;
+            fontRendererObj.drawString("Consumption: " + conLev, 1 + offsetX, offsetY, 0x373737, false);
         }
 
         GL11.glPopMatrix();
