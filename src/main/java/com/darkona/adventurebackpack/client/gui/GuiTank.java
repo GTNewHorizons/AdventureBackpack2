@@ -1,8 +1,5 @@
 package com.darkona.adventurebackpack.client.gui;
 
-import static java.awt.Color.blue;
-import static java.awt.Color.green;
-import static java.awt.Color.red;
 
 import java.util.ArrayList;
 import java.util.List;
