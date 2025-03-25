@@ -27,6 +27,7 @@ public class ItemComponent extends ItemAB {
     private final HashMap<String, IIcon> componentIcons = new HashMap<>();
     private final String[] names = { "sleepingBag", "backpackTank", "hoseHead", "macheteHandle", "copterEngine",
             "copterBlades", "inflatableBoat", "inflatableBoatMotorized", "hydroBlades", };
+    private final static String defaultIconName = "copterBlades";
 
     public ItemComponent() {
         setNoRepair();
@@ -55,12 +56,21 @@ public class ItemComponent extends ItemAB {
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage(int damage) {
+        // Some places like the statistics menu render Items with metadata 0, which is not valid for this item,
+        // so just fall back to a valid icon.
+        if (damage < 1 || damage > names.length) return componentIcons.get(defaultIconName);
+
         return componentIcons.get(names[damage - 1]);
     }
 
     @Override
     public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName(names[getDamage(stack) - 1]);
+        int damage = getDamage(stack);
+        // Some places like the statistics menu render Items with metadata 0, which is not valid for this item,
+        // so just fall back to the generic component item name.
+        if (damage < 1 || damage > names.length) return getUnlocalizedName();
+
+        return super.getUnlocalizedName(names[damage - 1]);
     }
 
     @Override
