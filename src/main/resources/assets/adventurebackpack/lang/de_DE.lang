@@ -22,14 +22,14 @@ item.adventurebackpack:melonJuiceBottle.name=Melonensaftflasche
 item.adventurebackpack:machete.name=Machete
 
 item.adventurebackpack:backpackHose.name=Rucksackschlauch
-item.adventurebackpack:hose_leftTank_suck.name=Hose: Linker Tank / Saugmodus
-item.adventurebackpack:hose_leftTank_spill.name=Hose: Linker Tank / Ausschüttmodus
-item.adventurebackpack:hose_leftTank_drink.name=Hose: Linker Tank / Trinkmodus
+item.adventurebackpack:hose_leftTank_suck.name=Schlauch: Linker Tank / Saugmodus
+item.adventurebackpack:hose_leftTank_spill.name=Schlauch: Linker Tank / Ausschüttmodus
+item.adventurebackpack:hose_leftTank_drink.name=Schlauch: Linker Tank / Trinkmodus
 
-item.adventurebackpack:hose_rightTank_suck.name=Hose: Rechter Tank / Saugmodus
-item.adventurebackpack:hose_rightTank_spill.name=Hose: Rechter Tank / Ausschüttmodus
-item.adventurebackpack:hose_rightTank_drink.name=Hose: Rechter Tank / Trinkmodus
-item.adventurebackpack:hoseUseless.name=Hose: Nutzlos / Kein Rucksack
+item.adventurebackpack:hose_rightTank_suck.name=Schlauch: Rechter Tank / Saugmodus
+item.adventurebackpack:hose_rightTank_spill.name=Schlauch: Rechter Tank / Ausschüttmodus
+item.adventurebackpack:hose_rightTank_drink.name=Schlauch: Rechter Tank / Trinkmodus
+item.adventurebackpack:hoseUseless.name=Schlauch: Nutzlos / Kein Rucksack
 
 ## Wearables
 item.adventurebackpack:adventureBackpack.name=Abenteurerrucksack
