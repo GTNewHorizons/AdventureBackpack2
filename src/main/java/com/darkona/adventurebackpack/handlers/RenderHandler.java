@@ -25,7 +25,5 @@ public class RenderHandler {
         float pitch = event.entity.rotationPitch;
         float yaw = event.entity.rotationYaw;
         ClientProxy.rendererWearableEquipped.render(event.entity, x, y, z, rotationX, rotationY, rotationZ, pitch, yaw);
-
-        event.renderCape = false;
     }
 }
