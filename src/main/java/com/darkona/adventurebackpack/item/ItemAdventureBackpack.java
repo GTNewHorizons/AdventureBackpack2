@@ -42,7 +42,7 @@ import com.darkona.adventurebackpack.proxy.ClientProxy;
 import com.darkona.adventurebackpack.reference.BackpackTypes;
 import com.darkona.adventurebackpack.util.BackpackUtils;
 import com.darkona.adventurebackpack.util.CoordsUtils;
-import com.darkona.adventurebackpack.util.EnchUtils;
+import com.darkona.adventurebackpack.util.PotionAndEnchantUtils;
 import com.darkona.adventurebackpack.util.Resources;
 import com.darkona.adventurebackpack.util.TipUtils;
 import com.darkona.adventurebackpack.util.Utils;
@@ -135,7 +135,7 @@ public class ItemAdventureBackpack extends ItemAdventure {
     @Override
     public void onPlayerDeath(World world, EntityPlayer player, ItemStack stack) {
         if (world.isRemote || !ConfigHandler.backpackDeathPlace
-                || EnchUtils.isSoulBounded(stack)
+                || PotionAndEnchantUtils.isSoulBounded(stack)
                 || player.getEntityWorld().getGameRules().getGameRuleBooleanValue("keepInventory")) {
             return;
         }

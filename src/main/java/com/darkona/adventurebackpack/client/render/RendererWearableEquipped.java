@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL12;
 
 import com.darkona.adventurebackpack.config.ConfigHandler;
 import com.darkona.adventurebackpack.item.IBackWearableItem;
-import com.darkona.adventurebackpack.util.EnchUtils;
+import com.darkona.adventurebackpack.util.PotionAndEnchantUtils;
 import com.darkona.adventurebackpack.util.Wearing;
 
 public class RendererWearableEquipped extends RendererLivingEntity {
@@ -42,7 +42,7 @@ public class RendererWearableEquipped extends RendererLivingEntity {
         if (!ConfigHandler.enableBackRendering) {
             return;
         }
-        if (EnchUtils.getTranslucencyLevel(wearable) == 2) {
+        if (PotionAndEnchantUtils.getTranslucencyLevel(wearable) == 2) {
             return;
         }
         GL11.glPushAttrib(GL11.GL_TRANSFORM_BIT);
