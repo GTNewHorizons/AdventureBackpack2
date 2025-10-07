@@ -136,6 +136,7 @@ public class ItemAdventureBackpack extends ItemAdventure {
     public void onPlayerDeath(World world, EntityPlayer player, ItemStack stack) {
         if (world.isRemote || !ConfigHandler.backpackDeathPlace
                 || PotionAndEnchantUtils.isSoulBounded(stack)
+                || PotionAndEnchantUtils.hasStickyItems(player)
                 || player.getEntityWorld().getGameRules().getGameRuleBooleanValue("keepInventory")) {
             return;
         }

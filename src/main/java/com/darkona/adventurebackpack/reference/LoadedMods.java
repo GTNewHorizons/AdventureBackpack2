@@ -19,6 +19,7 @@ public final class LoadedMods {
     public static final boolean THAUMCRAFT = registerMod("Thaumcraft");
     public static final boolean WAILA = registerMod("waila");
     public static final boolean HUNGEROVERHAUL = registerMod("HungerOverhaul");
+    public static final boolean WITCHERY = registerMod("witchery");
     public static final boolean WITCHINGGADGETS = registerMod("WitchingGadgets");
 
     private LoadedMods() {}

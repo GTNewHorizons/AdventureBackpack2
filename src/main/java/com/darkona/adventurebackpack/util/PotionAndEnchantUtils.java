@@ -2,7 +2,9 @@ package com.darkona.adventurebackpack.util;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 
 import com.darkona.adventurebackpack.config.ConfigHandler;
 import com.darkona.adventurebackpack.reference.LoadedMods;
@@ -14,6 +16,7 @@ public final class PotionAndEnchantUtils {
     // -1 - enchantment not found
     private static final int SOUL_BOUND_ID = setSoulBoundID();
     private static final int TRANSLUCENCY_ID = setTranslucencyID();
+    private static final int STICKY_ITEMS_ID = setStickyItemsID();
 
     private PotionAndEnchantUtils() {}
 
@@ -35,6 +38,17 @@ public final class PotionAndEnchantUtils {
 
         for (Enchantment ench : Enchantment.enchantmentsList)
             if (ench != null && ench.getName().equals("enchantment.wg.invisibleGear")) return ench.effectId;
+
+        return -1;
+    }
+
+    private static int setStickyItemsID() {
+        if (!ConfigHandler.allowStickyItems) return -3;
+
+        if (!LoadedMods.WITCHERY) return -2;
+
+        for (Potion potion : Potion.potionTypes)
+            if (potion != null && potion.getName().equals("witchery:potion.keepinventory")) return potion.getId();
 
         return -1;
     }
@@ -61,5 +75,9 @@ public final class PotionAndEnchantUtils {
             return EnchantmentHelper.getEnchantments(book).get(TRANSLUCENCY_ID) != null;
         }
         return false;
+    }
+
+    public static boolean hasStickyItems(EntityPlayer player) {
+        return (STICKY_ITEMS_ID > 0) && player.isPotionActive(STICKY_ITEMS_ID);
     }
 }
