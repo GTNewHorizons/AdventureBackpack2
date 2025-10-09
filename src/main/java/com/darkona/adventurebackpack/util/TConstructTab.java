@@ -4,13 +4,8 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import com.darkona.adventurebackpack.init.ModNetwork;
 import com.darkona.adventurebackpack.network.GUIPacket;
@@ -60,49 +55,9 @@ public class TConstructTab {
             return Wearing.isWearingWearable(Minecraft.getMinecraft().thePlayer);
         }
 
-        /**
-         * Draws this button to the screen. Code from TinkersConstruct and modified for dynamic and depth-enabled
-         * backpack rendering
-         */
         @Override
         public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-            if (this.visible) {
-                ItemStack renderStack = Wearing.getWearingWearable(Minecraft.getMinecraft().thePlayer);
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-                int yTexPos = this.enabled ? 3 : 32;
-                int ySize = this.enabled ? 25 : 32;
-                int xOffset = this.id == 2 ? 0 : 1;
-                int yPos = this.yPosition + (this.enabled ? 3 : 0);
-
-                mc.renderEngine.bindTexture(texture);
-                this.drawTexturedModalRect(this.xPosition, yPos, xOffset * 28, yTexPos, 28, ySize);
-
-                RenderHelper.enableGUIStandardItemLighting();
-                this.zLevel = 100.0F;
-                itemRenderer.zLevel = 100.0F;
-                GL11.glEnable(GL11.GL_LIGHTING);
-                GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
-                itemRenderer.renderItemAndEffectIntoGUI(
-                        mc.fontRenderer,
-                        mc.renderEngine,
-                        renderStack,
-                        xPosition + 6,
-                        yPosition + 8);
-                itemRenderer.renderItemOverlayIntoGUI(
-                        mc.fontRenderer,
-                        mc.renderEngine,
-                        renderStack,
-                        xPosition + 6,
-                        yPosition + 8);
-                GL11.glDisable(GL11.GL_DEPTH_TEST);
-                GL11.glDisable(GL11.GL_LIGHTING);
-                GL11.glEnable(GL11.GL_BLEND);
-                itemRenderer.zLevel = 0.0F;
-                this.zLevel = 0.0F;
-                RenderHelper.disableStandardItemLighting();
-            }
+            drawButton(mc, Wearing.getWearingWearable(mc.thePlayer), true);
         }
     }
 }
