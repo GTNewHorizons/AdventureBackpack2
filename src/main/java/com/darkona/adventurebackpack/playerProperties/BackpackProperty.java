@@ -16,14 +16,17 @@ import com.darkona.adventurebackpack.network.SyncPropertiesPacket;
 public class BackpackProperty implements IExtendedEntityProperties {
 
     private static final String PROPERTY_NAME = "abp.property";
+    private static final String TAG_STORED_SPAWN = "storedSpawn";
 
     private EntityPlayer player;
     private ItemStack wearable = null;
+    private ChunkCoordinates storedSpawn = null;
     private ChunkCoordinates campFire = null;
     private boolean forceCampFire = false;
     private int dimension = 0;
 
     private boolean isWakingUpInPortableBag = false;
+    private boolean isWakingUpInDeployedBag = false;
 
     public void setWakingUpInPortableBag(boolean b) {
         this.isWakingUpInPortableBag = b;
@@ -31,6 +34,14 @@ public class BackpackProperty implements IExtendedEntityProperties {
 
     public boolean isWakingUpInPortableBag() {
         return this.isWakingUpInPortableBag;
+    }
+
+    public void setWakingUpInDeployedBag(boolean b) {
+        this.isWakingUpInDeployedBag = b;
+    }
+
+    public boolean isWakingUpInDeployedBag() {
+        return this.isWakingUpInDeployedBag;
     }
 
     public static void sync(EntityPlayer player) {
@@ -72,6 +83,13 @@ public class BackpackProperty implements IExtendedEntityProperties {
     @Override
     public void saveNBTData(NBTTagCompound compound) {
         if (wearable != null) compound.setTag("wearable", wearable.writeToNBT(new NBTTagCompound()));
+        if (storedSpawn != null) {
+            NBTTagCompound spawn = new NBTTagCompound();
+            spawn.setInteger("posX", storedSpawn.posX);
+            spawn.setInteger("posY", storedSpawn.posY);
+            spawn.setInteger("posZ", storedSpawn.posZ);
+            compound.setTag(TAG_STORED_SPAWN, spawn);
+        }
         if (campFire != null) {
             compound.setInteger("campFireX", campFire.posX);
             compound.setInteger("campFireY", campFire.posY);
@@ -87,6 +105,14 @@ public class BackpackProperty implements IExtendedEntityProperties {
             setWearable(
                     compound.hasKey("wearable") ? ItemStack.loadItemStackFromNBT(compound.getCompoundTag("wearable"))
                             : null);
+            if (compound.hasKey(TAG_STORED_SPAWN)) {
+                NBTTagCompound spawn = compound.getCompoundTag(TAG_STORED_SPAWN);
+                setStoredSpawn(
+                        new ChunkCoordinates(
+                                spawn.getInteger("posX"),
+                                spawn.getInteger("posY"),
+                                spawn.getInteger("posZ")));
+            }
             setCampFire(
                     new ChunkCoordinates(
                             compound.getInteger("campFireX"),
@@ -108,6 +134,14 @@ public class BackpackProperty implements IExtendedEntityProperties {
 
     public ItemStack getWearable() {
         return wearable;
+    }
+
+    public void setStoredSpawn(ChunkCoordinates coords) {
+        storedSpawn = coords;
+    }
+
+    public ChunkCoordinates getStoredSpawn() {
+        return storedSpawn;
     }
 
     public void setCampFire(ChunkCoordinates cf) {

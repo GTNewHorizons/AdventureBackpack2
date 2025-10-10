@@ -104,7 +104,21 @@ public class BlockSleepingBag extends BlockDirectional {
                     "Stored spawn data for " + player
                             .getDisplayName() + ": " + spawn + " dimID: " + player.worldObj.provider.dimensionId);
         } else {
-            LogHelper.warn("Cannot store spawn data for " + player.getDisplayName());
+            LogHelper.warn("Cannot store spawn data for " + player.getDisplayName() + ", because it is non-existent");
+        }
+    }
+
+    public static void storeOriginalSpawn(EntityPlayer player) {
+        ChunkCoordinates spawn = player.getBedLocation(player.worldObj.provider.dimensionId);
+        final BackpackProperty props = BackpackProperty.get(player);
+
+        if (spawn != null && props != null) {
+            props.setStoredSpawn(spawn);
+            LogHelper.info(
+                    "Stored spawn data for " + player
+                            .getDisplayName() + ": " + spawn + " dimID: " + player.worldObj.provider.dimensionId);
+        } else {
+            LogHelper.warn("Cannot store spawn data for " + player.getDisplayName() + ", because it is non-existent");
         }
     }
 
@@ -120,6 +134,25 @@ public class BlockSleepingBag extends BlockDirectional {
             LogHelper.info(
                     "Restored spawn data for " + player
                             .getDisplayName() + ": " + coords + " dimID: " + player.worldObj.provider.dimensionId);
+        } else {
+            LogHelper.warn("No spawn data to restore for " + player.getDisplayName());
+        }
+    }
+
+    public static void restoreOriginalSpawn(EntityPlayer player) {
+        final BackpackProperty props = BackpackProperty.get(player);
+
+        if (props != null) {
+            final ChunkCoordinates oldSpawn = props.getStoredSpawn();
+            if (oldSpawn != null) {
+                player.setSpawnChunk(oldSpawn, false, player.worldObj.provider.dimensionId);
+                LogHelper.info(
+                        "Restored spawn data for " + player.getDisplayName()
+                                + ": "
+                                + oldSpawn
+                                + " dimID: "
+                                + player.worldObj.provider.dimensionId);
+            }
         } else {
             LogHelper.warn("No spawn data to restore for " + player.getDisplayName());
         }
@@ -186,17 +219,21 @@ public class BlockSleepingBag extends BlockDirectional {
 
                     if (isSleepingInPortableBag(player)) {
                         storeOriginalSpawn(player, Wearing.getWearingBackpackInv(player).getExtendedProperties());
-                        player.setSpawnChunk(new ChunkCoordinates(x, y, z), true, player.dimension);
                     } else {
-                        player.setSpawnChunk(new ChunkCoordinates(x, y, z), true, player.dimension);
                         LogHelper.info("Looking for a campfire nearby...");
                         ChunkCoordinates campfire = CoordsUtils
                                 .findBlock3D(world, x, y, z, ModBlocks.blockCampFire, 8, 2);
                         if (campfire != null) {
                             LogHelper.info("Campfire Found, saving coordinates. " + campfire);
                             BackpackProperty.get(player).setCampFire(campfire);
+                        } else {
+                            LogHelper.info("No campfire found. Keeping spawnpoint at previous location");
+                            storeOriginalSpawn(player);
+                            BackpackProperty.get(player).setCampFire(null);
                         }
                     }
+                    player.setSpawnChunk(new ChunkCoordinates(x, y, z), true, player.dimension);
+
                     return true;
                 } else {
                     if (enumstatus == EntityPlayer.EnumStatus.NOT_POSSIBLE_NOW) {
