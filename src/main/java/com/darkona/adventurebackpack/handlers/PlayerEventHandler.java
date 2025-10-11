@@ -274,15 +274,23 @@ public class PlayerEventHandler {
         ChunkCoordinates bedLocation = player.getBedLocation(player.dimension);
         if (bedLocation != null && player.worldObj.getBlock(bedLocation.posX, bedLocation.posY, bedLocation.posZ)
                 == ModBlocks.blockSleepingBag) {
-            // If the player wakes up in one of those super confortable SleepingBags (tm) (Patent Pending)
+            // If the player wakes up in one of those super comfortable SleepingBags (tm) (Patent Pending)
             if (BlockSleepingBag.isSleepingInPortableBag(player)) {
                 BlockSleepingBag.packPortableSleepingBag(player);
                 BackpackProperty.get(player).setWakingUpInPortableBag(true);
                 LogHelper.info("Player just woke up in a portable sleeping bag.");
             } else {
-                BackpackProperty.get(player).setForceCampFire(true);
-                LogHelper.info(
-                        "Player just woke up in a sleeping bag, forcing respawn in the last lighted campfire, if there's any");
+                BackpackProperty props = BackpackProperty.get(player);
+                if (props != null) {
+                    BackpackProperty.get(player).setWakingUpInDeployedBag(true);
+                    if (props.getCampFire() != null) {
+                        props.setForceCampFire(true);
+                        LogHelper.info(
+                                "Player just woke up in a deployed sleeping bag, forcing respawn near the last lit campfire");
+                    } else {
+                        LogHelper.info("Player just woke up in a deployed sleeping bag away from any campfire");
+                    }
+                }
             }
         } else {
             // If it's a regular bed or whatever
@@ -293,18 +301,24 @@ public class PlayerEventHandler {
     @SubscribeEvent
     public void tickPlayer(TickEvent.PlayerTickEvent event) {
         EntityPlayer player = event.player;
-        if (player != null && !player.isDead && Wearing.isWearingWearable(player)) {
-            if (event.phase == TickEvent.Phase.START) {
-                BackpackProperty.get(player).executeWearableUpdateProtocol();
-            }
-            if (event.phase == TickEvent.Phase.END) {
-                if (!player.worldObj.isRemote) {
-                    if (BackpackProperty.get(player).isWakingUpInPortableBag() && Wearing.isWearingBackpack(player)) {
-                        BlockSleepingBag.restoreOriginalSpawn(
-                                player,
-                                Wearing.getWearingBackpackInv(player).getExtendedProperties());
-                        BackpackProperty.get(player).setWakingUpInPortableBag(false);
+        if (player != null && !player.isDead) {
+            if (Wearing.isWearingWearable(player)) {
+                if (event.phase == TickEvent.Phase.START) {
+                    BackpackProperty.get(player).executeWearableUpdateProtocol();
+                }
+                if (event.phase == TickEvent.Phase.END) {
+                    if (!player.worldObj.isRemote) {
+                        if (BackpackProperty.get(player).isWakingUpInPortableBag()
+                                && Wearing.isWearingBackpack(player)) {
+                            BlockSleepingBag.restoreOriginalSpawn(player);
+                            BackpackProperty.get(player).setWakingUpInPortableBag(false);
+                        }
                     }
+                }
+            } else if (event.phase == TickEvent.Phase.END && !player.worldObj.isRemote) {
+                if (BackpackProperty.get(player).isWakingUpInDeployedBag()) {
+                    BlockSleepingBag.restoreOriginalSpawn(player);
+                    BackpackProperty.get(player).setWakingUpInDeployedBag(false);
                 }
             }
         }
