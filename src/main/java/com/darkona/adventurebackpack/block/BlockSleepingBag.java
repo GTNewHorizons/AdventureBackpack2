@@ -10,7 +10,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.Direction;
@@ -35,11 +34,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class BlockSleepingBag extends BlockDirectional {
 
     private static final int[][] footBlockToHeadBlockMap = new int[][] { { 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 0 } };
-
-    private static final String TAG_STORED_SPAWN = "storedSpawn";
-    private static final String TAG_SPAWN_POS_X = "posX";
-    private static final String TAG_SPAWN_POS_Y = "posY";
-    private static final String TAG_SPAWN_POS_Z = "posZ";
 
     @SideOnly(Side.CLIENT)
     private IIcon[] endIcons;
@@ -92,22 +86,6 @@ public class BlockSleepingBag extends BlockDirectional {
         }
     }
 
-    public static void storeOriginalSpawn(EntityPlayer player, NBTTagCompound tag) {
-        ChunkCoordinates spawn = player.getBedLocation(player.worldObj.provider.dimensionId);
-        if (spawn != null) {
-            NBTTagCompound storedSpawn = new NBTTagCompound();
-            storedSpawn.setInteger(TAG_SPAWN_POS_X, spawn.posX);
-            storedSpawn.setInteger(TAG_SPAWN_POS_Y, spawn.posY);
-            storedSpawn.setInteger(TAG_SPAWN_POS_Z, spawn.posZ);
-            tag.setTag(TAG_STORED_SPAWN, storedSpawn);
-            LogHelper.info(
-                    "Stored spawn data for " + player
-                            .getDisplayName() + ": " + spawn + " dimID: " + player.worldObj.provider.dimensionId);
-        } else {
-            LogHelper.warn("Cannot store spawn data for " + player.getDisplayName() + ", because it is non-existent");
-        }
-    }
-
     public static void storeOriginalSpawn(EntityPlayer player) {
         ChunkCoordinates spawn = player.getBedLocation(player.worldObj.provider.dimensionId);
         final BackpackProperty props = BackpackProperty.get(player);
@@ -119,23 +97,6 @@ public class BlockSleepingBag extends BlockDirectional {
                             .getDisplayName() + ": " + spawn + " dimID: " + player.worldObj.provider.dimensionId);
         } else {
             LogHelper.warn("Cannot store spawn data for " + player.getDisplayName() + ", because it is non-existent");
-        }
-    }
-
-    public static void restoreOriginalSpawn(EntityPlayer player, NBTTagCompound tag) {
-        if (tag.hasKey(TAG_STORED_SPAWN)) {
-            NBTTagCompound storedSpawn = tag.getCompoundTag(TAG_STORED_SPAWN);
-            ChunkCoordinates coords = new ChunkCoordinates(
-                    storedSpawn.getInteger(TAG_SPAWN_POS_X),
-                    storedSpawn.getInteger(TAG_SPAWN_POS_Y),
-                    storedSpawn.getInteger(TAG_SPAWN_POS_Z));
-            player.setSpawnChunk(coords, false, player.worldObj.provider.dimensionId);
-            tag.removeTag(TAG_STORED_SPAWN);
-            LogHelper.info(
-                    "Restored spawn data for " + player
-                            .getDisplayName() + ": " + coords + " dimID: " + player.worldObj.provider.dimensionId);
-        } else {
-            LogHelper.warn("No spawn data to restore for " + player.getDisplayName());
         }
     }
 
@@ -218,7 +179,7 @@ public class BlockSleepingBag extends BlockDirectional {
                     // and the bed location isn't set until then, normally.
 
                     if (isSleepingInPortableBag(player)) {
-                        storeOriginalSpawn(player, Wearing.getWearingBackpackInv(player).getExtendedProperties());
+                        storeOriginalSpawn(player);
                     } else {
                         LogHelper.info("Looking for a campfire nearby...");
                         ChunkCoordinates campfire = CoordsUtils

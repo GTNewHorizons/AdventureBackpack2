@@ -310,9 +310,7 @@ public class PlayerEventHandler {
                     if (!player.worldObj.isRemote) {
                         if (BackpackProperty.get(player).isWakingUpInPortableBag()
                                 && Wearing.isWearingBackpack(player)) {
-                            BlockSleepingBag.restoreOriginalSpawn(
-                                    player,
-                                    Wearing.getWearingBackpackInv(player).getExtendedProperties());
+                            BlockSleepingBag.restoreOriginalSpawn(player);
                             BackpackProperty.get(player).setWakingUpInPortableBag(false);
                         }
                     }
