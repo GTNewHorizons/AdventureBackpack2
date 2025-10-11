@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidTank;
@@ -26,6 +25,7 @@ import com.darkona.adventurebackpack.network.SleepingBagPacket;
 import com.darkona.adventurebackpack.reference.LoadedMods;
 import com.darkona.adventurebackpack.util.Resources;
 import com.darkona.adventurebackpack.util.TinkersUtils;
+import com.darkona.adventurebackpack.util.TipUtils;
 
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerTooltipHandler;
@@ -165,41 +165,35 @@ public class GuiAdvBackpack extends GuiWithTanks {
 
         @Override
         public List<String> handleTooltip(GuiContainer gui, int mouseX, int mouseY, List<String> currenttip) {
-            if (gui.getClass() != GuiAdvBackpack.class) return currenttip;
+            if (gui instanceof GuiAdvBackpack) {
+                GuiAdvBackpack backpackGui = (GuiAdvBackpack) gui;
 
-            GuiWithTanks backpackGui = (GuiWithTanks) gui;
+                if (GuiContainerManager.shouldShowTooltip(backpackGui) && currenttip.isEmpty()) {
+                    // Fluid tank tooltips
+                    if (tankLeft.inTank(backpackGui, mouseX, mouseY)) currenttip.addAll(tankLeft.getTankTooltip());
+                    if (tankRight.inTank(backpackGui, mouseX, mouseY)) currenttip.addAll(tankRight.getTankTooltip());
 
-            // Fluid tank tooltips
-            if (GuiContainerManager.shouldShowTooltip(gui) && currenttip.size() == 0) {
-                if (tankLeft.inTank(backpackGui, mouseX, mouseY)) currenttip.addAll(tankLeft.getTankTooltip());
-
-                if (tankRight.inTank(backpackGui, mouseX, mouseY)) currenttip.addAll(tankRight.getTankTooltip());
+                    // equip/unequip button
+                    if (backpackGui.source == Source.HOLDING && equipButton.inButton(backpackGui, mouseX, mouseY)) {
+                        currenttip.add(TipUtils.l10n("backpack.equip"));
+                    } else if (backpackGui.isBedButtonCase() && bedButton.inButton(backpackGui, mouseX, mouseY)) {
+                        currenttip.add(TipUtils.l10n("backpack.sleepingbag"));
+                    } else if (backpackGui.source == Source.WEARING
+                            && unequipButton.inButton(backpackGui, mouseX, mouseY)) {
+                                currenttip.add(TipUtils.l10n("backpack.unequip.key1"));
+                                currenttip.add(TipUtils.l10n("backpack.unequip.key2"));
+                            }
+                }
             }
 
             return currenttip;
         }
 
-        /**
-         * Required by IContainerTooltipHandler implementation but not needed here
-         */
-        @Override
-        public List<String> handleItemDisplayName(GuiContainer gui, ItemStack itemstack, List<String> currenttip) {
-            return currenttip;
-        }
-
-        /**
-         * Required by IContainerTooltipHandler implementation but not needed here
-         */
-        @Override
-        public List<String> handleItemTooltip(GuiContainer gui, ItemStack itemstack, int mousex, int mousey,
-                List<String> currenttip) {
-            return currenttip;
-        }
     }
 
     static {
         // Only instantiate TooltipHandler if enabled in config.
-        if (ConfigHandler.tanksHoveringText) {
+        if (ConfigHandler.showGuiTooltips) {
             GuiContainerManager.addTooltipHandler(new TooltipHandler());
         }
     }
