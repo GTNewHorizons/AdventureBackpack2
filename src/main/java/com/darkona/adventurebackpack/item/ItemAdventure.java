@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
 import com.darkona.adventurebackpack.inventory.ContainerAdventure;
-import com.darkona.adventurebackpack.util.EnchUtils;
+import com.darkona.adventurebackpack.util.PotionAndEnchantUtils;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class ItemAdventure extends ItemAB implements IBackWearableItem {
@@ -41,7 +41,7 @@ public abstract class ItemAdventure extends ItemAB implements IBackWearableItem 
 
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return EnchUtils.isSoulBook(book) || EnchUtils.isTranslucencyBook(book);
+        return PotionAndEnchantUtils.isSoulBook(book) || PotionAndEnchantUtils.isTranslucencyBook(book);
 
     }
 }
