@@ -90,6 +90,7 @@ public class ContainerBackpack extends ContainerAdventure {
 
     @Override
     public void detectAndSendChanges() {
+        syncCraftMatrixWithInventory(true);
         syncCraftResultToServer();
         super.detectAndSendChanges();
     }
