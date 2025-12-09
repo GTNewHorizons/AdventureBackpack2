@@ -1,5 +1,8 @@
 package com.darkona.adventurebackpack.client.gui;
 
+import java.util.List;
+
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidTank;
@@ -13,6 +16,10 @@ import com.darkona.adventurebackpack.inventory.ContainerCopter;
 import com.darkona.adventurebackpack.inventory.InventoryCopterPack;
 import com.darkona.adventurebackpack.reference.GeneralReference;
 import com.darkona.adventurebackpack.util.Resources;
+import com.darkona.adventurebackpack.util.TipUtils;
+
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.guihook.IContainerTooltipHandler;
 
 public class GuiCopterPack extends GuiWithTanks {
 
@@ -100,5 +107,38 @@ public class GuiCopterPack extends GuiWithTanks {
     @Override
     protected GuiImageButtonNormal getUnequipButton() {
         return unequipButton;
+    }
+
+    /**
+     * An instance of this class will handle tooltips for all instances of GuiAdvBackpack
+     */
+    public static class TooltipHandler implements IContainerTooltipHandler {
+
+        @Override
+        public List<String> handleTooltip(GuiContainer gui, int mouseX, int mouseY, List<String> currenttip) {
+            if (gui instanceof GuiCopterPack) {
+                GuiCopterPack copterPackGui = (GuiCopterPack) gui;
+
+                if (GuiContainerManager.shouldShowTooltip(copterPackGui) && currenttip.isEmpty()) {
+                    // equip/unequip button
+                    if (copterPackGui.source == Source.HOLDING && equipButton.inButton(copterPackGui, mouseX, mouseY)) {
+                        currenttip.add(TipUtils.l10n("copter.equip"));
+                    } else if (copterPackGui.source == Source.WEARING
+                            && unequipButton.inButton(copterPackGui, mouseX, mouseY)) {
+                                currenttip.add(TipUtils.l10n("copter.unequip"));
+                            }
+                }
+            }
+
+            return currenttip;
+        }
+
+    }
+
+    static {
+        // Only instantiate TooltipHandler if enabled in config.
+        if (ConfigHandler.showGuiTooltips) {
+            GuiContainerManager.addTooltipHandler(new GuiCopterPack.TooltipHandler());
+        }
     }
 }
