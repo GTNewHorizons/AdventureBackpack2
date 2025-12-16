@@ -15,6 +15,7 @@ public class ConfigHandler {
 
     public static boolean allowSoulBound = true;
     public static boolean allowTranslucency = true;
+    public static boolean allowStickyItems = true;
     public static boolean backpackDeathPlace = true;
     public static boolean backpackAbilities = true;
     public static boolean enableCampfireSpawn = false;
@@ -104,6 +105,11 @@ public class ConfigHandler {
                 .getBoolean("Allow SoulBound", "gameplay", true, "Allow SoulBound enchant on wearable packs");
         allowTranslucency = config
                 .getBoolean("Allow Translucency", "gameplay", true, "Allow Translucency enchant on wearable packs");
+        allowStickyItems = config.getBoolean(
+                "Allow Sticky Items",
+                "gameplay",
+                true,
+                "Allow Sticky Items potion effect on wearable packs");
         backpackAbilities = config.getBoolean(
                 "Backpack Abilities",
                 "gameplay",
