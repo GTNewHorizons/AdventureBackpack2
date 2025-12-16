@@ -30,7 +30,7 @@ public class ConfigHandler {
     public static boolean enableTemperatureBar = false;
     public static boolean enableToolsRender = true;
     public static int typeTankRender = 2;
-    public static boolean tanksHoveringText = true;
+    public static boolean showGuiTooltips = true;
 
     public static boolean statusOverlay = true;
     public static boolean statusOverlayLeft = true;
@@ -166,7 +166,7 @@ public class ConfigHandler {
                 "graphics",
                 true,
                 "Enable rendering for tools in the backpack tool slots");
-        tanksHoveringText = config.getBoolean("Hovering Text", "graphics", true, "Show hovering text on fluid tanks?");
+        showGuiTooltips = config.getBoolean("Hovering Text", "graphics", true, "Show tooltips in GUIs?");
 
         // Graphics.Status
         statusOverlay = config
