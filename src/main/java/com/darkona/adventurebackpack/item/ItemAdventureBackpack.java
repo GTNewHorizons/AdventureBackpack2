@@ -194,8 +194,13 @@ public class ItemAdventureBackpack extends ItemAdventure {
             boolean from) {
         if (stack.stackSize == 0 || !player.canPlayerEdit(x, y, z, side, stack)) return false;
         if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
+
         if (!stack.stackTagCompound.hasKey(TAG_TYPE)) {
             stack.stackTagCompound.setByte(TAG_TYPE, BackpackTypes.getMeta(BackpackTypes.STANDARD));
+        }
+
+        if (!stack.stackTagCompound.hasKey(TAG_INVENTORY)) {
+            stack.stackTagCompound.setTag(TAG_INVENTORY, new NBTTagList());
         }
 
         // world.spawnEntityInWorld(new EntityLightningBolt(world, x, y, z));
