@@ -38,9 +38,9 @@ public class ShapedBackpackRecipe extends ShapedOreRecipe {
         for (int i = 0; i < craftMatrix.getSizeInventory(); i++) {
             ItemStack matrixStack = craftMatrix.getStackInSlot(i);
             if (matrixStack != null && matrixStack.getItem() == ModItems.adventureBackpack
-                    && BackpackUtils.getWearableCompound(matrixStack).hasKey(TAG_INVENTORY)) {
-                NBTTagList itemList = BackpackUtils.getWearableInventory(matrixStack);
-                BackpackUtils.getWearableCompound(craftResult).setTag(TAG_INVENTORY, itemList);
+                    && BackpackUtils.getOrCreateWearableCompound(matrixStack).hasKey(TAG_INVENTORY)) {
+                NBTTagList itemList = BackpackUtils.getOrCreateWearableInventory(matrixStack);
+                BackpackUtils.getOrCreateWearableCompound(craftResult).setTag(TAG_INVENTORY, itemList);
 
                 LogHelper.info(
                         "Successfully transferred inventory from the ingredient backpack ["

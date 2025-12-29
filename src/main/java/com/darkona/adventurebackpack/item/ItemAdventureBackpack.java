@@ -72,7 +72,7 @@ public class ItemAdventureBackpack extends ItemAdventure {
     @SuppressWarnings({ "unchecked" })
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltips, boolean advanced) {
-        NBTTagCompound backpackTag = BackpackUtils.getWearableCompound(stack);
+        NBTTagCompound backpackTag = BackpackUtils.getOrCreateWearableCompound(stack);
 
         BackpackTypes type = BackpackTypes.getType(backpackTag.getByte(TAG_TYPE));
         tooltips.add(Utils.getColoredSkinName(type));
@@ -278,7 +278,7 @@ public class ItemAdventureBackpack extends ItemAdventure {
     }
 
     private int getItemCount(ItemStack backpack) {
-        NBTTagList itemList = BackpackUtils.getWearableInventory(backpack);
+        NBTTagList itemList = BackpackUtils.getOrCreateWearableInventory(backpack);
         int itemCount = itemList.tagCount();
         for (int i = itemCount - 1; i >= 0; i--) {
             int slotAtI = itemList.getCompoundTagAt(i).getInteger(Constants.TAG_SLOT);
