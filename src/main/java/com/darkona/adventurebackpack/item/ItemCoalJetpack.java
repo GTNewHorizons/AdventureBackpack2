@@ -58,7 +58,7 @@ public class ItemCoalJetpack extends ItemAdventure {
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltips, boolean advanced) {
         FluidTank waterTank = new FluidTank(Constants.Jetpack.WATER_CAPACITY);
         FluidTank steamTank = new FluidTank(Constants.Jetpack.STEAM_CAPACITY);
-        NBTTagCompound jetpackTag = BackpackUtils.getWearableCompound(stack);
+        NBTTagCompound jetpackTag = BackpackUtils.getOrCreateWearableCompound(stack);
 
         if (GuiScreen.isShiftKeyDown()) {
             NBTTagList itemList = jetpackTag.getTagList(Constants.TAG_INVENTORY, NBT.TAG_COMPOUND);
@@ -265,7 +265,7 @@ public class ItemCoalJetpack extends ItemAdventure {
     }
 
     private int getTemperature(ItemStack jetpack) {
-        return BackpackUtils.getWearableCompound(jetpack).getInteger("temperature");
+        return BackpackUtils.getOrCreateWearableCompound(jetpack).getInteger("temperature");
     }
 
     @Override

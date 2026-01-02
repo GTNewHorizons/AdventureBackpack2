@@ -61,7 +61,7 @@ public class ItemCopterPack extends ItemAdventure {
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltips, boolean advanced) {
         FluidTank fuelTank = new FluidTank(FUEL_CAPACITY);
-        NBTTagCompound copterTag = BackpackUtils.getWearableCompound(stack);
+        NBTTagCompound copterTag = BackpackUtils.getOrCreateWearableCompound(stack);
 
         if (GuiScreen.isShiftKeyDown()) {
             fuelTank.readFromNBT(copterTag.getCompoundTag(TAG_FUEL_TANK));
@@ -96,7 +96,7 @@ public class ItemCopterPack extends ItemAdventure {
 
     @Override
     public void onEquipped(World world, EntityPlayer player, ItemStack stack) {
-        BackpackUtils.getWearableCompound(stack).setByte(TAG_STATUS, OFF_MODE);
+        BackpackUtils.getOrCreateWearableCompound(stack).setByte(TAG_STATUS, OFF_MODE);
     }
 
     @Override
@@ -257,7 +257,7 @@ public class ItemCopterPack extends ItemAdventure {
 
     @Override
     public void onUnequipped(World world, EntityPlayer player, ItemStack stack) {
-        BackpackUtils.getWearableCompound(stack).setByte(TAG_STATUS, OFF_MODE);
+        BackpackUtils.getOrCreateWearableCompound(stack).setByte(TAG_STATUS, OFF_MODE);
     }
 
     @Override
