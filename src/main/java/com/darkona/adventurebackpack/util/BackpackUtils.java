@@ -105,6 +105,7 @@ public class BackpackUtils {
     public static ItemStack createBackpackStack(BackpackTypes type) {
         ItemStack backpackStack = new ItemStack(ModItems.adventureBackpack, 1, BackpackTypes.getMeta(type));
         setBackpackType(backpackStack, type);
+        createWearableInventory(backpackStack);
         return backpackStack;
     }
 
