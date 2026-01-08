@@ -55,7 +55,7 @@ public class CopterPackSound extends MovingSound {
             return;
         }
 
-        status = BackpackUtils.getWearableCompound(copter).getByte(TAG_STATUS);
+        status = BackpackUtils.getOrCreateWearableCompound(copter).getByte(TAG_STATUS);
         if (status == ItemCopterPack.OFF_MODE) {
             setDonePlaying();
         } else if (status == ItemCopterPack.HOVER_MODE) {

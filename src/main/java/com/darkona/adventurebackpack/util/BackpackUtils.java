@@ -79,8 +79,7 @@ public class BackpackUtils {
         }
     }
 
-    public static NBTTagCompound getWearableCompound(ItemStack stack) {
-        // it also creates wearable compound if stack has no own, so maybe worth to rename the method
+    public static NBTTagCompound getOrCreateWearableCompound(ItemStack stack) {
         if (!stack.hasTagCompound() || !stack.stackTagCompound.hasKey(TAG_WEARABLE_COMPOUND))
             createWearableCompound(stack);
 
@@ -93,15 +92,14 @@ public class BackpackUtils {
         stack.stackTagCompound.setTag(TAG_WEARABLE_COMPOUND, new NBTTagCompound());
     }
 
-    public static NBTTagList getWearableInventory(ItemStack stack) {
-        // it also creates TagList if stack has no own, so maybe worth to rename the method
-        if (!getWearableCompound(stack).hasKey(TAG_INVENTORY)) createWearableInventory(stack);
+    public static NBTTagList getOrCreateWearableInventory(ItemStack stack) {
+        if (!getOrCreateWearableCompound(stack).hasKey(TAG_INVENTORY)) createWearableInventory(stack);
 
-        return getWearableCompound(stack).getTagList(TAG_INVENTORY, Constants.NBT.TAG_COMPOUND);
+        return getOrCreateWearableCompound(stack).getTagList(TAG_INVENTORY, Constants.NBT.TAG_COMPOUND);
     }
 
     private static void createWearableInventory(ItemStack stack) {
-        getWearableCompound(stack).setTag(TAG_INVENTORY, new NBTTagList());
+        getOrCreateWearableCompound(stack).setTag(TAG_INVENTORY, new NBTTagList());
     }
 
     public static ItemStack createBackpackStack(BackpackTypes type) {
@@ -112,7 +110,7 @@ public class BackpackUtils {
     }
 
     public static void setBackpackType(ItemStack stack, BackpackTypes type) {
-        getWearableCompound(stack).setByte(TAG_TYPE, BackpackTypes.getMeta(type));
+        getOrCreateWearableCompound(stack).setByte(TAG_TYPE, BackpackTypes.getMeta(type));
     }
 
     public static ItemStack createCopterStack() {

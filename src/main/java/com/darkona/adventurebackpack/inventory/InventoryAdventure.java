@@ -136,7 +136,7 @@ abstract class InventoryAdventure implements IInventoryTanks {
     }
 
     protected NBTTagCompound getWearableCompound() {
-        return BackpackUtils.getWearableCompound(containerStack);
+        return BackpackUtils.getOrCreateWearableCompound(containerStack);
     }
 
     protected void setInventoryFromTagList(NBTTagList items) {
