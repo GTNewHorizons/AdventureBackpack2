@@ -80,9 +80,7 @@ abstract class InventoryAdventure implements IInventoryTanks {
     }
 
     @Override
-    public void markDirty() {
-        saveToNBT(containerStack.stackTagCompound);
-    }
+    public void markDirty() {}
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer player) {
