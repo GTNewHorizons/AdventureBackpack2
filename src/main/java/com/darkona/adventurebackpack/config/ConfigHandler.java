@@ -87,6 +87,7 @@ public class ConfigHandler {
     public static boolean allowBonusGen = false;
     public static boolean allowGolemGen = true;
     public static boolean allowPigmanGen = false;
+    public static boolean disableVillagerTrade = true;
 
     public static boolean chatSpam = true;
 
@@ -331,6 +332,8 @@ public class ConfigHandler {
                 "worldgen",
                 false,
                 "Allow generation of Pigman Backpacks in dungeon loot and villager trades");
+        disableVillagerTrade = config
+                .getBoolean("Disable Villager Trade", "worldgen", true, "Disables trade for Villager Backpacks");
 
         // Experimental
         bossBarIndent = config.getInt(
