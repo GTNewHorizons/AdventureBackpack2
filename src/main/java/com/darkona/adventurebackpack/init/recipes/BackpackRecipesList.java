@@ -514,7 +514,7 @@ public class BackpackRecipesList {
                 "DaD",
                 "CEC",
                 'L',
-                Blocks.log,
+                new ItemStack(Blocks.log, 1, 0),
                 'G',
                 Blocks.glass,
                 'D',
@@ -522,7 +522,7 @@ public class BackpackRecipesList {
                 'a',
                 backpack,
                 'C',
-                "cobblestone",
+                Blocks.cobblestone,
                 'E',
                 Blocks.emerald_block);
     }
