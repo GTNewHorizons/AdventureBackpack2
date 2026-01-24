@@ -508,6 +508,23 @@ public class BackpackRecipesList {
         Squid = reviewRecipe("BIB", "IaI", "BIB", 'a', backpack, 'B', woolBlue, 'I', new ItemStack(Items.dye, 1, 0));
 
         Sponge = reviewRecipe(covered, 'X', Blocks.sponge, 'a', backpack);
+
+        Villager = reviewRecipe(
+                "LGL",
+                "DaD",
+                "CEC",
+                'L',
+                new ItemStack(Blocks.log, 1, 0),
+                'G',
+                Blocks.glass,
+                'D',
+                Items.wooden_door,
+                'a',
+                backpack,
+                'C',
+                Blocks.cobblestone,
+                'E',
+                Blocks.emerald_block);
     }
 
     public final Object[] Silverfish;
@@ -581,6 +598,7 @@ public class BackpackRecipesList {
     public final Object[] Yellow;
     public final Object[] Zombie;
     public final Object[] ModdedNetwork;
+    public final Object[] Villager;
 
     public static Object[] reviewRecipe(Object... objects) {
         return objects;

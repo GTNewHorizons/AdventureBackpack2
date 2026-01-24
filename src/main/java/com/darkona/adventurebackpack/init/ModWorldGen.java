@@ -25,7 +25,7 @@ import cpw.mods.fml.common.registry.VillagerRegistry;
 public class ModWorldGen {
 
     public static void init() {
-        {
+        if (!ConfigHandler.disableVillagerTrade) {
             ItemStack backpack = BackpackUtils.createBackpackStack(VILLAGER);
             VillagerRegistry.instance().registerVillageTradeHandler(1, new ModWorldGen.TradeHandler(backpack));
             VillagerRegistry.instance().registerVillageTradeHandler(2, new ModWorldGen.TradeHandler(backpack));
