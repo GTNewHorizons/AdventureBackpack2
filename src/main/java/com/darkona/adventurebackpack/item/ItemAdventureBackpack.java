@@ -42,7 +42,7 @@ import com.darkona.adventurebackpack.proxy.ClientProxy;
 import com.darkona.adventurebackpack.reference.BackpackTypes;
 import com.darkona.adventurebackpack.util.BackpackUtils;
 import com.darkona.adventurebackpack.util.CoordsUtils;
-import com.darkona.adventurebackpack.util.EnchUtils;
+import com.darkona.adventurebackpack.util.PotionAndEnchantUtils;
 import com.darkona.adventurebackpack.util.Resources;
 import com.darkona.adventurebackpack.util.TipUtils;
 import com.darkona.adventurebackpack.util.Utils;
@@ -72,7 +72,7 @@ public class ItemAdventureBackpack extends ItemAdventure {
     @SuppressWarnings({ "unchecked" })
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltips, boolean advanced) {
-        NBTTagCompound backpackTag = BackpackUtils.getWearableCompound(stack);
+        NBTTagCompound backpackTag = BackpackUtils.getOrCreateWearableCompound(stack);
 
         BackpackTypes type = BackpackTypes.getType(backpackTag.getByte(TAG_TYPE));
         tooltips.add(Utils.getColoredSkinName(type));
@@ -135,7 +135,8 @@ public class ItemAdventureBackpack extends ItemAdventure {
     @Override
     public void onPlayerDeath(World world, EntityPlayer player, ItemStack stack) {
         if (world.isRemote || !ConfigHandler.backpackDeathPlace
-                || EnchUtils.isSoulBounded(stack)
+                || PotionAndEnchantUtils.isSoulBounded(stack)
+                || PotionAndEnchantUtils.hasStickyItems(player)
                 || player.getEntityWorld().getGameRules().getGameRuleBooleanValue("keepInventory")) {
             return;
         }
@@ -193,8 +194,13 @@ public class ItemAdventureBackpack extends ItemAdventure {
             boolean from) {
         if (stack.stackSize == 0 || !player.canPlayerEdit(x, y, z, side, stack)) return false;
         if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
+
         if (!stack.stackTagCompound.hasKey(TAG_TYPE)) {
             stack.stackTagCompound.setByte(TAG_TYPE, BackpackTypes.getMeta(BackpackTypes.STANDARD));
+        }
+
+        if (!stack.stackTagCompound.hasKey(TAG_INVENTORY)) {
+            stack.stackTagCompound.setTag(TAG_INVENTORY, new NBTTagList());
         }
 
         // world.spawnEntityInWorld(new EntityLightningBolt(world, x, y, z));
@@ -277,7 +283,7 @@ public class ItemAdventureBackpack extends ItemAdventure {
     }
 
     private int getItemCount(ItemStack backpack) {
-        NBTTagList itemList = BackpackUtils.getWearableInventory(backpack);
+        NBTTagList itemList = BackpackUtils.getOrCreateWearableInventory(backpack);
         int itemCount = itemList.tagCount();
         for (int i = itemCount - 1; i >= 0; i--) {
             int slotAtI = itemList.getCompoundTagAt(i).getInteger(Constants.TAG_SLOT);

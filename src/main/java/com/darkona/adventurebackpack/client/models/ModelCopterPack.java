@@ -183,7 +183,7 @@ public class ModelCopterPack extends ModelWearable {
         InventoryCopterPack copterInv = new InventoryCopterPack(this.copterPack);
         copterInv.openInventory();
         Axis.isHidden = true;
-        if (BackpackUtils.getWearableCompound(copterPack).getByte(TAG_STATUS) != ItemCopterPack.OFF_MODE) {
+        if (BackpackUtils.getOrCreateWearableCompound(copterPack).getByte(TAG_STATUS) != ItemCopterPack.OFF_MODE) {
             Axis.isHidden = false;
             int degrees;
             if (entity.onGround || (entity.isSneaking())) {

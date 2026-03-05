@@ -8,6 +8,7 @@ import static com.darkona.adventurebackpack.common.Constants.TAG_DISABLE_CYCLING
 import static com.darkona.adventurebackpack.common.Constants.TAG_DISABLE_NVISION;
 import static com.darkona.adventurebackpack.common.Constants.TAG_EXTENDED_COMPOUND;
 import static com.darkona.adventurebackpack.common.Constants.TAG_INVENTORY;
+import static com.darkona.adventurebackpack.common.Constants.TAG_LAST_TIME;
 import static com.darkona.adventurebackpack.common.Constants.TAG_LEFT_TANK;
 import static com.darkona.adventurebackpack.common.Constants.TAG_RIGHT_TANK;
 import static com.darkona.adventurebackpack.common.Constants.TAG_TYPE;
@@ -134,7 +135,7 @@ public class TileAdventureBackpack extends TileAdventure implements IInventoryBa
         extendedProperties = backpackTag.getCompoundTag(TAG_EXTENDED_COMPOUND);
         disableCycling = backpackTag.getBoolean(TAG_DISABLE_CYCLING);
         disableNVision = backpackTag.getBoolean(TAG_DISABLE_NVISION);
-        lastTime = backpackTag.getInteger("lastTime");
+        lastTime = backpackTag.getInteger(TAG_LAST_TIME);
     }
 
     @Override
@@ -161,7 +162,7 @@ public class TileAdventureBackpack extends TileAdventure implements IInventoryBa
         backpackTag.setTag(TAG_EXTENDED_COMPOUND, extendedProperties);
         backpackTag.setBoolean(TAG_DISABLE_CYCLING, disableCycling);
         backpackTag.setBoolean(TAG_DISABLE_NVISION, disableNVision);
-        backpackTag.setInteger("lastTime", lastTime);
+        backpackTag.setInteger(TAG_LAST_TIME, lastTime);
 
         compound.setTag(TAG_WEARABLE_COMPOUND, backpackTag);
     }

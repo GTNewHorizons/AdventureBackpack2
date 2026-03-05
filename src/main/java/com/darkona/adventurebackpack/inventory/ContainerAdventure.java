@@ -58,7 +58,7 @@ public abstract class ContainerAdventure extends Container {
             // check if parent item is gone
             ItemStack parentItem = inventory.getParentItem();
             if (parentItem != null) {
-                if (player.getCurrentEquippedItem() != parentItem) {
+                if (!ItemStack.areItemStacksEqual(player.getCurrentEquippedItem(), parentItem)) {
                     player.closeScreen();
                     return;
                 }

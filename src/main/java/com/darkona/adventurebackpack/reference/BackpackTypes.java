@@ -184,7 +184,7 @@ public enum BackpackTypes {
         if (backpack == null) // well... Wearing.getWearingBackpack() may return null... //TODO solve this damn null
             return null;
 
-        NBTTagCompound backpackTag = BackpackUtils.getWearableCompound(backpack);
+        NBTTagCompound backpackTag = BackpackUtils.getOrCreateWearableCompound(backpack);
         if (backpackTag.getByte(TAG_TYPE) == UNKNOWN.meta) // TODO remove? are we rly need to normalize it?
         {
             backpackTag.setByte(TAG_TYPE, STANDARD.meta);

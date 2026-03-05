@@ -35,8 +35,8 @@ import com.darkona.adventurebackpack.item.ItemAdventureBackpack;
 import com.darkona.adventurebackpack.playerProperties.BackpackProperty;
 import com.darkona.adventurebackpack.proxy.ServerProxy;
 import com.darkona.adventurebackpack.reference.BackpackTypes;
-import com.darkona.adventurebackpack.util.EnchUtils;
 import com.darkona.adventurebackpack.util.LogHelper;
+import com.darkona.adventurebackpack.util.PotionAndEnchantUtils;
 import com.darkona.adventurebackpack.util.Wearing;
 
 import cpw.mods.fml.common.eventhandler.Event;
@@ -170,7 +170,8 @@ public class PlayerEventHandler {
                         player.worldObj.createExplosion(player, player.posX, player.posY, player.posZ, 4.0F, false);
                     }
 
-                    if (player.getEntityWorld().getGameRules().getGameRuleBooleanValue("keepInventory")) {
+                    if (player.getEntityWorld().getGameRules().getGameRuleBooleanValue("keepInventory")
+                            || PotionAndEnchantUtils.hasStickyItems(player)) {
                         ((IBackWearableItem) props.getWearable().getItem())
                                 .onPlayerDeath(player.worldObj, player, props.getWearable());
                         ServerProxy.storePlayerProps(player);
@@ -189,7 +190,7 @@ public class PlayerEventHandler {
             ItemStack pack = Wearing.getWearingWearable(player);
             BackpackProperty props = BackpackProperty.get(player);
 
-            if (EnchUtils.isSoulBounded(pack)
+            if (PotionAndEnchantUtils.isSoulBounded(pack)
                     || (ConfigHandler.backpackDeathPlace && pack.getItem() instanceof ItemAdventureBackpack)) {
                 ((IBackWearableItem) props.getWearable().getItem())
                         .onPlayerDeath(player.worldObj, player, props.getWearable());

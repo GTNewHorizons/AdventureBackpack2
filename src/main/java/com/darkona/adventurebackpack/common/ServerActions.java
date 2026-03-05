@@ -250,7 +250,8 @@ public class ServerActions {
     }
 
     public static void copterSoundAtLogin(EntityPlayer player) {
-        byte status = BackpackUtils.getWearableCompound(BackpackProperty.get(player).getWearable()).getByte(TAG_STATUS);
+        byte status = BackpackUtils.getOrCreateWearableCompound(BackpackProperty.get(player).getWearable())
+                .getByte(TAG_STATUS);
 
         if (!player.worldObj.isRemote && status != ItemCopterPack.OFF_MODE) {
             ModNetwork.sendToNearby(new EntitySoundPacket.Message(EntitySoundPacket.COPTER_SOUND, player), player);
@@ -258,7 +259,7 @@ public class ServerActions {
     }
 
     public static void jetpackSoundAtLogin(EntityPlayer player) {
-        boolean isBoiling = BackpackUtils.getWearableCompound(BackpackProperty.get(player).getWearable())
+        boolean isBoiling = BackpackUtils.getOrCreateWearableCompound(BackpackProperty.get(player).getWearable())
                 .getBoolean("boiling");
 
         if (!player.worldObj.isRemote && isBoiling) {
@@ -271,7 +272,7 @@ public class ServerActions {
     public static void toggleCopterPack(EntityPlayer player, ItemStack copter, byte type) {
         String message = "";
         boolean actionPerformed = false;
-        byte mode = BackpackUtils.getWearableCompound(copter).getByte(TAG_STATUS);
+        byte mode = BackpackUtils.getOrCreateWearableCompound(copter).getByte(TAG_STATUS);
         byte newMode = ItemCopterPack.OFF_MODE;
 
         if (type == WearableModePacket.COPTER_ON_OFF) {
@@ -305,7 +306,7 @@ public class ServerActions {
         }
 
         if (actionPerformed) {
-            BackpackUtils.getWearableCompound(copter).setByte(TAG_STATUS, newMode);
+            BackpackUtils.getOrCreateWearableCompound(copter).setByte(TAG_STATUS, newMode);
             if (player.worldObj.isRemote && ConfigHandler.chatSpam) {
                 player.addChatComponentMessage(new ChatComponentTranslation(message));
             }
