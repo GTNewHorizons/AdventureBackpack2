@@ -1,6 +1,7 @@
 package com.darkona.adventurebackpack.handlers;
 
 import java.util.HashSet;
+import java.util.Objects;
 
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -165,6 +166,11 @@ public class PlayerEventHandler {
                     // point if there's no campfire.
                 }
 
+                if (BlockSleepingBag.shouldRestoreStoredSpawnOnDeath(player)) {
+                    BlockSleepingBag.restoreOriginalSpawn(player);
+                    props.clearSleepingBagSpawn();
+                }
+
                 if (Wearing.isWearingWearable(player)) {
                     if (Wearing.isWearingTheRightBackpack(player, BackpackTypes.CREEPER)) {
                         player.worldObj.createExplosion(player, player.posX, player.posY, player.posZ, 4.0F, false);
@@ -172,11 +178,11 @@ public class PlayerEventHandler {
 
                     if (player.getEntityWorld().getGameRules().getGameRuleBooleanValue("keepInventory")
                             || PotionAndEnchantUtils.hasStickyItems(player)) {
-                        ((IBackWearableItem) props.getWearable().getItem())
+                        ((IBackWearableItem) Objects.requireNonNull(props.getWearable().getItem()))
                                 .onPlayerDeath(player.worldObj, player, props.getWearable());
-                        ServerProxy.storePlayerProps(player);
                     }
                 }
+                ServerProxy.storePlayerProps(player);
             }
         }
         event.setResult(Event.Result.ALLOW);
@@ -283,7 +289,6 @@ public class PlayerEventHandler {
             } else {
                 BackpackProperty props = BackpackProperty.get(player);
                 if (props != null) {
-                    BackpackProperty.get(player).setWakingUpInDeployedBag(true);
                     if (props.getCampFire() != null) {
                         props.setForceCampFire(true);
                         LogHelper.info(
@@ -295,7 +300,9 @@ public class PlayerEventHandler {
             }
         } else {
             // If it's a regular bed or whatever
-            BackpackProperty.get(player).setForceCampFire(false);
+            BackpackProperty props = BackpackProperty.get(player);
+            props.setForceCampFire(false);
+            props.clearSleepingBagSpawn();
         }
     }
 
@@ -315,11 +322,6 @@ public class PlayerEventHandler {
                             BackpackProperty.get(player).setWakingUpInPortableBag(false);
                         }
                     }
-                }
-            } else if (event.phase == TickEvent.Phase.END && !player.worldObj.isRemote) {
-                if (BackpackProperty.get(player).isWakingUpInDeployedBag()) {
-                    BlockSleepingBag.restoreOriginalSpawn(player);
-                    BackpackProperty.get(player).setWakingUpInDeployedBag(false);
                 }
             }
         }

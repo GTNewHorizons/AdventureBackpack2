@@ -73,6 +73,15 @@ public class BlockSleepingBag extends BlockDirectional {
         return (meta & 8) != 0;
     }
 
+    private static ChunkCoordinates getHeadCoordinates(int x, int y, int z, int meta) {
+        if (!isBlockHeadOfBed(meta)) {
+            int dir = getDirection(meta);
+            x += footBlockToHeadBlockMap[dir][0];
+            z += footBlockToHeadBlockMap[dir][1];
+        }
+        return new ChunkCoordinates(x, y, z);
+    }
+
     public static boolean isSleepingInPortableBag(EntityPlayer player) {
         return Wearing.isWearingBackpack(player)
                 && Wearing.getWearingBackpackInv(player).getExtendedProperties().hasKey(Constants.TAG_SLEEPING_IN_BAG);
@@ -86,37 +95,27 @@ public class BlockSleepingBag extends BlockDirectional {
         }
     }
 
-    public static void storeOriginalSpawn(EntityPlayer player) {
-        ChunkCoordinates spawn = player.getBedLocation(player.worldObj.provider.dimensionId);
-        final BackpackProperty props = BackpackProperty.get(player);
-
-        if (spawn != null && props != null) {
-            props.setStoredSpawn(spawn);
-            LogHelper.info(
-                    "Stored spawn data for " + player
-                            .getDisplayName() + ": " + spawn + " dimID: " + player.worldObj.provider.dimensionId);
-        } else {
-            LogHelper.warn("Cannot store spawn data for " + player.getDisplayName() + ", because it is non-existent");
-        }
-    }
-
     public static void restoreOriginalSpawn(EntityPlayer player) {
         final BackpackProperty props = BackpackProperty.get(player);
 
         if (props != null) {
             final ChunkCoordinates oldSpawn = props.getStoredSpawn();
             if (oldSpawn != null) {
-                player.setSpawnChunk(oldSpawn, false, player.worldObj.provider.dimensionId);
-                LogHelper.info(
-                        "Restored spawn data for " + player.getDisplayName()
-                                + ": "
-                                + oldSpawn
-                                + " dimID: "
-                                + player.worldObj.provider.dimensionId);
+                player.setSpawnChunk(oldSpawn, false, props.getStoredSpawnDimension());
             }
-        } else {
-            LogHelper.warn("No spawn data to restore for " + player.getDisplayName());
         }
+    }
+
+    public static boolean shouldRestoreStoredSpawnOnDeath(EntityPlayer player) {
+        BackpackProperty prop = BackpackProperty.get(player);
+        if (prop == null) return false;
+
+        ChunkCoordinates sleepingBagSpawn = prop.getSleepingBagSpawn();
+        if (sleepingBagSpawn == null) return false;
+        if (prop.getSleepingBagSpawnDimension() != player.dimension) return false;
+
+        return player.worldObj.getBlock(sleepingBagSpawn.posX, sleepingBagSpawn.posY, sleepingBagSpawn.posZ)
+                != ModBlocks.blockSleepingBag;
     }
 
     public void onPortableBlockActivated(World world, EntityPlayer player, int cX, int cY, int cZ) {
@@ -171,16 +170,24 @@ public class BlockSleepingBag extends BlockDirectional {
                     setBedOccupied(world, x, y, z, false);
                 }
 
+                BackpackProperty props = BackpackProperty.get(player);
+                ChunkCoordinates previousSpawn = player.getBedLocation(player.dimension);
+                int previousSpawnDimension = player.dimension;
                 EntityPlayer.EnumStatus enumstatus = player.sleepInBedAt(x, y, z);
 
                 if (enumstatus == EntityPlayer.EnumStatus.OK) {
                     setBedOccupied(world, x, y, z, true);
+                    ChunkCoordinates sleepingBagSpawn = new ChunkCoordinates(x, y, z);
+                    if (props != null) {
+                        props.setSleepingBagSpawn(sleepingBagSpawn, player.dimension);
+                        if (previousSpawn != null) {
+                            props.setStoredSpawn(previousSpawn, previousSpawnDimension);
+                        }
+                    }
                     // This is so the wake-up event can detect it. It fires before the player wakes up.
                     // and the bed location isn't set until then, normally.
 
-                    if (isSleepingInPortableBag(player)) {
-                        storeOriginalSpawn(player);
-                    } else {
+                    if (!isSleepingInPortableBag(player)) {
                         LogHelper.info("Looking for a campfire nearby...");
                         ChunkCoordinates campfire = CoordsUtils
                                 .findBlock3D(world, x, y, z, ModBlocks.blockCampFire, 8, 2);
@@ -189,12 +196,10 @@ public class BlockSleepingBag extends BlockDirectional {
                             BackpackProperty.get(player).setCampFire(campfire);
                         } else {
                             LogHelper.info("No campfire found. Keeping spawnpoint at previous location");
-                            storeOriginalSpawn(player);
                             BackpackProperty.get(player).setCampFire(null);
                         }
                     }
-                    player.setSpawnChunk(new ChunkCoordinates(x, y, z), true, player.dimension);
-
+                    player.setSpawnChunk(sleepingBagSpawn, true, player.dimension);
                     return true;
                 } else {
                     if (enumstatus == EntityPlayer.EnumStatus.NOT_POSSIBLE_NOW) {
@@ -297,32 +302,35 @@ public class BlockSleepingBag extends BlockDirectional {
 
     @Override
     public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta) {
-        // TODO make it work if player destroyed head block of sleeping bag (so backpack 1 more tile away)
-        // LogHelper.info("onBlockDestroyedByPlayer() : BlockSleepingBag");
+        ChunkCoordinates head = getHeadCoordinates(x, y, z, meta);
         int direction = getDirection(meta);
         int tileZ = z;
         int tileX = x;
-        switch (meta) {
-            case 0:
-                tileZ--;
-                break;
-            case 1:
-                tileX++;
-                break;
-            case 2:
-                tileZ++;
-                break;
-            case 3:
-                tileX--;
-                break;
+        if (isBlockHeadOfBed(meta)) {
+            tileX -= footBlockToHeadBlockMap[direction][0];
+            tileZ -= footBlockToHeadBlockMap[direction][1];
+        } else {
+            tileX += footBlockToHeadBlockMap[direction][0];
+            tileZ += footBlockToHeadBlockMap[direction][1];
         }
-        // LogHelper.info("onBlockDestroyedByPlayer() Looking for tile entity in x=" +tileX+" y="+y+" z="+tileZ+" while
-        // breaking the block in x= "+x+" y="+y+" z="+z);
         if (world.getTileEntity(tileX, y, tileZ) != null
                 && world.getTileEntity(tileX, y, tileZ) instanceof TileAdventureBackpack) {
-            // LogHelper.info("onBlockDestroyedByPlayer() Found the tile entity in x=" +tileX+" y="+y+" z="+z+" while
-            // breaking the block in x= "+x+" y="+y+" z="+z+" ...removing.");
             ((TileAdventureBackpack) world.getTileEntity(tileX, y, tileZ)).setSleepingBagDeployed(false);
+        }
+
+        if (!world.isRemote) {
+            for (Object object : world.playerEntities) {
+                EntityPlayer player = (EntityPlayer) object;
+                BackpackProperty props = BackpackProperty.get(player);
+                if (props != null && props.getSleepingBagSpawn() != null
+                        && props.getSleepingBagSpawnDimension() == world.provider.dimensionId
+                        && props.getSleepingBagSpawn().posX == head.posX
+                        && props.getSleepingBagSpawn().posY == head.posY
+                        && props.getSleepingBagSpawn().posZ == head.posZ) {
+                    restoreOriginalSpawn(player);
+                    props.clearSleepingBagSpawn();
+                }
+            }
         }
     }
 
