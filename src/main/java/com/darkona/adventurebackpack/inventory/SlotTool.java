@@ -49,7 +49,9 @@ public class SlotTool extends SlotAdventure {
         // GregTech
         if (GregtechUtils.isTool(itemName)) {
             int meta = stack.getItemDamage();
-            return !(meta == 0 || meta == 24 || meta > 169); // 0 = sword, 24 = mortar, 170+ = turbines
+            return !(meta == 0 || meta == 24 || (meta > 169 && meta < 180) || meta > 206); // 0 = sword, 24 = mortar,
+                                                                                           // 170-179 and 207+ =
+                                                                                           // excluded GT metas
         }
         if (itemName.startsWith("gt.metaitem")) return false; // charged baterries and such
 
