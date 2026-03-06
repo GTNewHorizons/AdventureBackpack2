@@ -16,9 +16,15 @@ import com.darkona.adventurebackpack.network.SyncPropertiesPacket;
 public class BackpackProperty implements IExtendedEntityProperties {
 
     private static final String PROPERTY_NAME = "abp.property";
+    private static final String TAG_STORED_SPAWN = "storedSpawn";
+    private static final String TAG_SLEEPING_BAG_SPAWN = "sleepingBagSpawn";
 
     private EntityPlayer player;
     private ItemStack wearable = null;
+    private ChunkCoordinates storedSpawn = null;
+    private int storedSpawnDimension = 0;
+    private ChunkCoordinates sleepingBagSpawn = null;
+    private int sleepingBagSpawnDimension = 0;
     private ChunkCoordinates campFire = null;
     private boolean forceCampFire = false;
     private int dimension = 0;
@@ -72,6 +78,22 @@ public class BackpackProperty implements IExtendedEntityProperties {
     @Override
     public void saveNBTData(NBTTagCompound compound) {
         if (wearable != null) compound.setTag("wearable", wearable.writeToNBT(new NBTTagCompound()));
+        if (storedSpawn != null) {
+            NBTTagCompound spawn = new NBTTagCompound();
+            spawn.setInteger("posX", storedSpawn.posX);
+            spawn.setInteger("posY", storedSpawn.posY);
+            spawn.setInteger("posZ", storedSpawn.posZ);
+            spawn.setInteger("dim", storedSpawnDimension);
+            compound.setTag(TAG_STORED_SPAWN, spawn);
+        }
+        if (sleepingBagSpawn != null) {
+            NBTTagCompound spawn = new NBTTagCompound();
+            spawn.setInteger("posX", sleepingBagSpawn.posX);
+            spawn.setInteger("posY", sleepingBagSpawn.posY);
+            spawn.setInteger("posZ", sleepingBagSpawn.posZ);
+            spawn.setInteger("dim", sleepingBagSpawnDimension);
+            compound.setTag(TAG_SLEEPING_BAG_SPAWN, spawn);
+        }
         if (campFire != null) {
             compound.setInteger("campFireX", campFire.posX);
             compound.setInteger("campFireY", campFire.posY);
@@ -87,6 +109,24 @@ public class BackpackProperty implements IExtendedEntityProperties {
             setWearable(
                     compound.hasKey("wearable") ? ItemStack.loadItemStackFromNBT(compound.getCompoundTag("wearable"))
                             : null);
+            if (compound.hasKey(TAG_STORED_SPAWN)) {
+                NBTTagCompound spawn = compound.getCompoundTag(TAG_STORED_SPAWN);
+                setStoredSpawn(
+                        new ChunkCoordinates(
+                                spawn.getInteger("posX"),
+                                spawn.getInteger("posY"),
+                                spawn.getInteger("posZ")),
+                        spawn.getInteger("dim"));
+            }
+            if (compound.hasKey(TAG_SLEEPING_BAG_SPAWN)) {
+                NBTTagCompound spawn = compound.getCompoundTag(TAG_SLEEPING_BAG_SPAWN);
+                setSleepingBagSpawn(
+                        new ChunkCoordinates(
+                                spawn.getInteger("posX"),
+                                spawn.getInteger("posY"),
+                                spawn.getInteger("posZ")),
+                        spawn.getInteger("dim"));
+            }
             setCampFire(
                     new ChunkCoordinates(
                             compound.getInteger("campFireX"),
@@ -108,6 +148,41 @@ public class BackpackProperty implements IExtendedEntityProperties {
 
     public ItemStack getWearable() {
         return wearable;
+    }
+
+    public void setStoredSpawn(ChunkCoordinates coords) {
+        setStoredSpawn(coords, player.worldObj.provider.dimensionId);
+    }
+
+    public void setStoredSpawn(ChunkCoordinates coords, int dim) {
+        storedSpawn = coords;
+        storedSpawnDimension = dim;
+    }
+
+    public ChunkCoordinates getStoredSpawn() {
+        return storedSpawn;
+    }
+
+    public int getStoredSpawnDimension() {
+        return storedSpawnDimension;
+    }
+
+    public void setSleepingBagSpawn(ChunkCoordinates coords, int dim) {
+        sleepingBagSpawn = coords;
+        sleepingBagSpawnDimension = dim;
+    }
+
+    public ChunkCoordinates getSleepingBagSpawn() {
+        return sleepingBagSpawn;
+    }
+
+    public int getSleepingBagSpawnDimension() {
+        return sleepingBagSpawnDimension;
+    }
+
+    public void clearSleepingBagSpawn() {
+        sleepingBagSpawn = null;
+        sleepingBagSpawnDimension = 0;
     }
 
     public void setCampFire(ChunkCoordinates cf) {
