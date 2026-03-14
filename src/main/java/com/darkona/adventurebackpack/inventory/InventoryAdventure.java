@@ -80,7 +80,9 @@ abstract class InventoryAdventure implements IInventoryTanks {
     }
 
     @Override
-    public void markDirty() {}
+    public void markDirty() {
+        dirtyInventory();
+    }
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer player) {
