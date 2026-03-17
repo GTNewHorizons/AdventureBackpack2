@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import com.darkona.adventurebackpack.config.ConfigHandler;
@@ -101,5 +102,19 @@ public class GeneralReference {
     @Nullable
     public static Float getFuelRate(String fluidName) {
         return liquidFuels.get(fluidName);
+    }
+
+    private static Fluid steam;
+
+    public static Fluid getSteamFluid() {
+        if (steam != null) {
+            return steam;
+        }
+        // prefer actual steam over water
+        steam = FluidRegistry.getFluid("steam");
+        if (steam == null) {
+            steam = FluidRegistry.getFluid("water");
+        }
+        return steam;
     }
 }
