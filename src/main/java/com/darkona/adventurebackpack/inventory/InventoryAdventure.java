@@ -82,6 +82,7 @@ abstract class InventoryAdventure implements IInventoryTanks {
     @Override
     public void markDirty() {
         dirtyInventory();
+        saveToNBT(containerStack.stackTagCompound);
     }
 
     @Override
