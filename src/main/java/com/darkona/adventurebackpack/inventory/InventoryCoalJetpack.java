@@ -13,11 +13,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 
 import com.darkona.adventurebackpack.common.Constants;
+import com.darkona.adventurebackpack.reference.GeneralReference;
 
 public class InventoryCoalJetpack extends InventoryAdventure {
 
@@ -77,7 +77,7 @@ public class InventoryCoalJetpack extends InventoryAdventure {
         coolTicks = jetpackTag.getInteger("coolTicks");
         currentItemBurnTime = jetpackTag.getInteger("currentBurn");
         if (steamTank.getFluid() != null && steamTank.getFluid().getFluid().getName().equals("water")) {
-            steamTank.setFluid(new FluidStack(FluidRegistry.getFluid("steam"), steamTank.getFluid().amount));
+            steamTank.setFluid(new FluidStack(GeneralReference.getSteamFluid(), steamTank.getFluid().amount));
         }
     }
 
