@@ -9,6 +9,8 @@ import org.lwjgl.input.Mouse;
 import com.darkona.adventurebackpack.common.Constants.Source;
 import com.darkona.adventurebackpack.config.Keybindings;
 import com.darkona.adventurebackpack.init.ModNetwork;
+import com.darkona.adventurebackpack.inventory.ContainerAdventure;
+import com.darkona.adventurebackpack.inventory.SlotFluid;
 import com.darkona.adventurebackpack.network.EquipUnequipBackWearablePacket;
 import com.darkona.adventurebackpack.reference.LoadedMods;
 import com.darkona.adventurebackpack.util.TConstructTab;
@@ -68,19 +70,19 @@ public abstract class GuiWithTanks extends GuiContainer {
 
     @Override
     public void handleMouseInput() {
-        if (Mouse.getEventDWheel() != 0) {
-            int i = Mouse.getEventX() * this.width / this.mc.displayWidth;
-            int j = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-            int marginX = (width - xSize) / 2;
-            int marginY = (height - ySize) / 2;
+        if (Mouse.getEventDWheel() != 0 && theSlot instanceof SlotFluid) {
+            return; // fluid slot processing is server-only, scroll would desync
+        }
 
-            if (i > marginX && i < marginX + xSize) {
-                if (j > marginY && j < marginY + ySize) {
-                    return;
-                    // forbid mouseWheel when mouse over our GUI,
-                    // Shift+Wheel on stacks of fluid containers places them to clients bucket slots, causes desync
-                }
+        // skip fluid slot routing on scroll so containers go to regular inventory client-side
+        if (Mouse.getEventDWheel() != 0 && inventorySlots instanceof ContainerAdventure) {
+            ((ContainerAdventure) inventorySlots).skipFluidSlots = true;
+            try {
+                super.handleMouseInput();
+            } finally {
+                ((ContainerAdventure) inventorySlots).skipFluidSlots = false;
             }
+            return;
         }
 
         super.handleMouseInput();

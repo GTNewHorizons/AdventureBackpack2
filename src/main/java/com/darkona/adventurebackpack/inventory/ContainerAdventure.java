@@ -28,6 +28,7 @@ public abstract class ContainerAdventure extends Container {
     private final int[] fluidsAmount;
     private int itemsCount;
     private boolean requestedUpdate;
+    public boolean skipFluidSlots;
 
     protected ContainerAdventure(EntityPlayer player, IInventoryTanks inventory, Source source) {
         this.player = player;

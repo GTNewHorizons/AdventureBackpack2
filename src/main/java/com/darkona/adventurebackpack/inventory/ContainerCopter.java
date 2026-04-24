@@ -29,7 +29,7 @@ public class ContainerCopter extends ContainerAdventure {
 
     @Override
     public boolean transferStackToPack(ItemStack stack) {
-        if (SlotFluid.isContainer(stack)) {
+        if (SlotFluid.isContainer(stack) && !skipFluidSlots) {
             FluidTank fuelTank = ((InventoryCopterPack) inventory).getFuelTank();
             ItemStack stackOut = getSlot(COPTER_INV_START + 1).getStack();
 

@@ -113,7 +113,7 @@ public class ContainerBackpack extends ContainerAdventure {
     protected boolean transferStackToPack(ItemStack stack) {
         if (SlotTool.isValidTool(stack)) {
             if (!mergeToolSlot(stack)) if (SlotBackpack.isValidItem(stack)) return mergeBackpackInv(stack);
-        } else if (SlotFluid.isContainer(stack) && !isHoldingSpace()) {
+        } else if (SlotFluid.isContainer(stack) && !isHoldingSpace() && !skipFluidSlots) {
             return transferFluidContainer(stack);
         } else if (SlotBackpack.isValidItem(stack)) {
             return mergeBackpackInv(stack);

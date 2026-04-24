@@ -45,7 +45,7 @@ public class ContainerJetpack extends ContainerAdventure {
 
     @Override
     public boolean transferStackToPack(ItemStack stack) {
-        if (SlotFluid.isContainer(stack)) {
+        if (SlotFluid.isContainer(stack) && !skipFluidSlots) {
             FluidTank waterTank = ((InventoryCoalJetpack) inventory).getWaterTank();
             ItemStack stackOut = getSlot(JETPACK_INV_START + 1).getStack();
 
