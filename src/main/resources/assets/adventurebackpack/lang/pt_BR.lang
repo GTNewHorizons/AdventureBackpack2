@@ -1,40 +1,207 @@
 # Items
-item.adventurebackpack:machete.name=Machete
-item.adventurebackpack:backpackComponent.name=Peça da Mochila
+
+## Componentes para Crafting
+item.adventurebackpack:backpackComponent.name=Componente de Mochila
 item.adventurebackpack:sleepingBag.name=Saco de Dormir
 item.adventurebackpack:backpackTank.name=Tanque da Mochila
-item.adventurebackpack:macheteHandle=Cabo de Machete
-item.adventurebackpack:hoseHead.name=Boca da Mangueira
-item.adventurebackpack:adventureBackpack.name=Mochila do Aventureiro
-item.adventurebackpack:backpackHose.name=Mangueira da Mochila
-item.adventurebackpack:adventureSuit.name=Traje do Aventureiro
-item.adventurebackpack:adventureHat.name=Fedora do Aventureiro
-item.adventurebackpack:pistonBoots.name=Botas de Pistão
+item.adventurebackpack:macheteHandle.name=Cabo de Machete
+item.adventurebackpack:hoseHead.name=Bocal da Mangueira
+item.adventurebackpack:copterEngine.name=Motor Diesel de Dois Cilindros
+item.adventurebackpack:copterBlades.name=Hélices do Cóptero
+item.adventurebackpack:hydroBlades.name=Hélices Hidráulicas
+item.adventurebackpack:inflatableBoat.name=Bote Inflável
+item.adventurebackpack:inflatableBoatMotorized.name=Bote Inflável (Motorizado)
+
+## Entidades
+entity.adventurebackpack.inflatableBoat.name=Bote Inflável
+entity.adventurebackpack.rideableSpider.name=Aranha Montável
+
+## Ferramentas e Consumíveis
+item.adventurebackpack:clockworkCrossbow.name=Besta Mecânica
 item.adventurebackpack:melonJuiceBottle.name=Garrafa de Suco de Melancia
+item.adventurebackpack:machete.name=Machete
+item.adventurebackpack:backpackHose.name=Mangueira da Mochila
 
-item.adventurebackpack:hose_leftTank_suck.name=Mangueira: Tanque Esquerdo / Modo Sugar
-item.adventurebackpack:hose_leftTank_spill.name=Mangueira: Tanque Esquerdo / Modo Expelir
+item.adventurebackpack:hose_leftTank_suck.name=Mangueira: Tanque Esquerdo / Modo Sucção
+item.adventurebackpack:hose_leftTank_spill.name=Mangueira: Tanque Esquerdo / Modo Despejo
 item.adventurebackpack:hose_leftTank_drink.name=Mangueira: Tanque Esquerdo / Modo Beber
-
-
-item.adventurebackpack:hose_rightTank_suck.name=Mangueira: Tanque Direito / Modo Sugar
-item.adventurebackpack:hose_rightTank_spill.name=Mangueira: Tanque Direito / Modo Expelir
+item.adventurebackpack:hose_rightTank_suck.name=Mangueira: Tanque Direito / Modo Sucção
+item.adventurebackpack:hose_rightTank_spill.name=Mangueira: Tanque Direito / Modo Despejo
 item.adventurebackpack:hose_rightTank_drink.name=Mangueira: Tanque Direito / Modo Beber
-
 item.adventurebackpack:hoseUseless.name=Mangueira: Inútil / Sem Mochila
-item.adventurebackpack:copterPack.name=MochiloCóptero
-#Blocks
-block.adventurebackpack:blockAdventureBackpack.name=Mochila do Aventureiro
 
-#CreativeTab
-itemGroup.adventurebackpack=Mochilas dos Aventureiros
+## Vestíveis
+item.adventurebackpack:adventureBackpack.name=Mochila do Aventureiro
+item.adventurebackpack:copterPack.name=Mochila-Cóptero
+item.adventurebackpack:coalJetpack.name=Jetpack a Carvão
 
-#Keybindings
+## Armadura
+item.adventurebackpack:adventureHat.name=Fedora do Aventureiro
+item.adventurebackpack:adventureSuit.name=Terno do Aventureiro
+item.adventurebackpack:adventurePants.name=Calças do Aventureiro
+item.adventurebackpack:pistonBoots.name=Botas de Pistão
+
+## Blocos
+blockAdventureBackpack.name=Mochilas do Aventureiro
+blockCampFire.name=Fogueira
+blockSleepingBag.name=Saco de Dormir
+
+## CreativeTab
+itemGroup.adventurebackpack=Mod Mochila do Aventureiro
+
+## Keybindings
 keys.adventureBackpack.category=Mochila do Aventureiro
-keys.adventureBackpack.openBackpackInventory=Abrir Conteúdo da Mochila
-keys.adventureBackpack.switchHoseTank=Trocar a Mangueira do Tanque
+keys.adventureBackpack.openInventory=Abrir Inventário
+keys.adventureBackpack.toggleActions=Alternar Ações
 
-#Fluids
+## Fluidos
 fluid.melonJuice=Suco de Melancia
 fluid.milk=Leite
-fluid.mushroomstew=Ensopado de Cogumelos
+fluid.mushrromstew=Ensopado de Cogumelos
+
+## Mensagens
+adventurebackpack:messages.already.equipped.backpack=Você já está usando uma Mochila do Aventureiro.
+adventurebackpack:messages.already.equipped.copterpack=Você já está usando uma Mochila-Cóptero.
+adventurebackpack:messages.already.equipped.jetpack=Você já está usando um Jetpack a Carvão.
+adventurebackpack:messages.already.impossibru=Você não está usando nenhuma mochila.
+adventurebackpack:messages.backpack.cant.bag=Não é possível colocar o saco de dormir! Verifique a área ao redor.
+adventurebackpack:messages.cant.sleep.here=Forças ancestrais não permitem dormir aqui.
+adventurebackpack:messages.copterpack.hover=Mochila-Cóptero: Modo Flutuação.
+adventurebackpack:messages.copterpack.normal=Mochila-Cóptero: Modo Normal.
+adventurebackpack:messages.copterpack.outoffuel=Mochila-Cóptero: Sem combustível.
+adventurebackpack:messages.copterpack.cantwater=Mochila-Cóptero: Não funciona na água.
+adventurebackpack:messages.copterpack.off=Mochila-Cóptero: Desligado.
+adventurebackpack:messages.jetpack.on=Jetpack a Carvão: Ligado.
+adventurebackpack:messages.jetpack.off=Jetpack a Carvão: Desligado.
+adventurebackpack:messages.nightvision.on=Visão Noturna: Ligada.
+adventurebackpack:messages.nightvision.off=Visão Noturna: Desligada.
+adventurebackpack:messages.cycling.on=Alternar Ferramentas: Ligado.
+adventurebackpack:messages.cycling.off=Alternar Ferramentas: Desligado.
+adventurebackpack:messages.crossbow.outofammo=Besta Mecânica: Sem munição.
+
+## Tooltips
+adventurebackpack:tooltips.on=LIGADO
+adventurebackpack:tooltips.off=DESLIGADO
+adventurebackpack:tooltips.empty=Vazio
+adventurebackpack:tooltips.meters=metros
+adventurebackpack:tooltips.error=Erro
+adventurebackpack:tooltips.steam=Vapor
+adventurebackpack:tooltips.press=Pressione
+adventurebackpack:tooltips.hold.shift=Segure Shift
+adventurebackpack:tooltips.hold.ctrl=Segure Ctrl
+adventurebackpack:tooltips.mouse.wheel=Roda do Mouse
+adventurebackpack:tooltips.max.altitude=Altitude máxima
+adventurebackpack:tooltips.backpack.slots.used=Slots usados
+adventurebackpack:tooltips.backpack.tank.left=Tanque Esquerdo
+adventurebackpack:tooltips.backpack.tank.right=Tanque Direito
+adventurebackpack:tooltips.backpack.cycling=Alternar Ferramentas
+adventurebackpack:tooltips.backpack.cycling.key1=ao usar
+adventurebackpack:tooltips.backpack.cycling.key2=a Mochila para alternar ferramentas
+adventurebackpack:tooltips.backpack.vision=Visão Noturna
+adventurebackpack:tooltips.backpack.vision.key1=ao usar
+adventurebackpack:tooltips.backpack.vision.key2=a Mochila para ativar visão noturna
+adventurebackpack:tooltips.backpack.equip=Mochila no Ombro
+adventurebackpack:tooltips.backpack.unequip.key1=Retirar Mochila do Ombro
+adventurebackpack:tooltips.backpack.unequip.key2=§7Segure Shift: usar Saco de Dormir§r
+adventurebackpack:tooltips.backpack.sleepingbag=Usar Saco de Dormir
+adventurebackpack:tooltips.jetpack.fuel=Combustível
+adventurebackpack:tooltips.jetpack.tank.water=Tanque Esquerdo
+adventurebackpack:tooltips.jetpack.tank.steam=Tanque Direito
+adventurebackpack:tooltips.jetpack.key.onoff1=ao usar
+adventurebackpack:tooltips.jetpack.key.onoff2=o Jetpack para ligar/desligar
+adventurebackpack:tooltips.jetpack.equip=Jetpack a Carvão no Ombro
+adventurebackpack:tooltips.jetpack.unequip=Retirar Jetpack a Carvão do Ombro
+adventurebackpack:tooltips.copter.tank.fuel=Tanque de Combustível
+adventurebackpack:tooltips.copter.rate.fuel=Taxa de consumo de combustível
+adventurebackpack:tooltips.copter.key.onoff1=ao usar
+adventurebackpack:tooltips.copter.key.onoff2=a Mochila-Cóptero para ligar/desligar
+adventurebackpack:tooltips.copter.key.hover1=durante o voo para
+adventurebackpack:tooltips.copter.key.hover2=alternar modo flutuação
+adventurebackpack:tooltips.copter.equip=Mochila-Cóptero no Ombro
+adventurebackpack:tooltips.copter.unequip=Retirar Mochila-Cóptero do Ombro
+adventurebackpack:tooltips.hose.key.header=Enquanto segura a Mangueira:
+adventurebackpack:tooltips.hose.key.tank=para trocar o tanque ativo
+adventurebackpack:tooltips.hose.key.mode=para trocar o modo
+adventurebackpack:tooltips.hose.dump1=Coloque a Mangueira no slot bucketOut da mochila
+adventurebackpack:tooltips.hose.dump2=para esvaziar o tanque correspondente
+adventurebackpack:tooltips.hose.dump.warn=AVISO! O fluido será descartado e perdido para sempre.
+
+## Skins
+adventurebackpack:skin.name.standard=Padrão
+adventurebackpack:skin.name.bat=Morcego
+adventurebackpack:skin.name.black=Preto
+adventurebackpack:skin.name.blaze=Blaze
+adventurebackpack:skin.name.blue=Azul
+adventurebackpack:skin.name.bookshelf=Estante de Livros
+adventurebackpack:skin.name.brown=Marrom
+adventurebackpack:skin.name.brown_mushroom=Cogumelo Marrom
+adventurebackpack:skin.name.cactus=Cacto
+adventurebackpack:skin.name.cake=Bolo
+adventurebackpack:skin.name.carrot=Cenoura
+adventurebackpack:skin.name.chest=Baú
+adventurebackpack:skin.name.chicken=Galinha
+adventurebackpack:skin.name.coal=Carvão
+adventurebackpack:skin.name.cookie=Biscoito
+adventurebackpack:skin.name.cow=Vaca
+adventurebackpack:skin.name.creeper=Creeper
+adventurebackpack:skin.name.cyan=Ciano
+adventurebackpack:skin.name.deluxe=Deluxe
+adventurebackpack:skin.name.diamond=Diamante
+adventurebackpack:skin.name.dragon=Dragão
+adventurebackpack:skin.name.egg=Ovo
+adventurebackpack:skin.name.electric=Elétrico
+adventurebackpack:skin.name.emerald=Esmeralda
+adventurebackpack:skin.name.end=End
+adventurebackpack:skin.name.enderman=Enderman
+adventurebackpack:skin.name.ghast=Ghast
+adventurebackpack:skin.name.glowstone=Pedra Luminosa
+adventurebackpack:skin.name.gold=Ouro
+adventurebackpack:skin.name.gray=Cinza
+adventurebackpack:skin.name.green=Verde
+adventurebackpack:skin.name.haybale=Fardo de Feno
+adventurebackpack:skin.name.horse=Cavalo
+adventurebackpack:skin.name.iron=Ferro
+adventurebackpack:skin.name.iron_golem=Golem de Ferro
+adventurebackpack:skin.name.lapis=Lápis-Lazúli
+adventurebackpack:skin.name.leather=Couro
+adventurebackpack:skin.name.light_blue=Azul Claro
+adventurebackpack:skin.name.light_gray=Cinza Claro
+adventurebackpack:skin.name.lime=Lima
+adventurebackpack:skin.name.magenta=Magenta
+adventurebackpack:skin.name.magma_cube=Cubo de Magma
+adventurebackpack:skin.name.melon=Melancia
+adventurebackpack:skin.name.modded_network=Rede de Mods
+adventurebackpack:skin.name.mooshroom=Mooshroom
+adventurebackpack:skin.name.nether=Nether
+adventurebackpack:skin.name.obsidian=Obsidiana
+adventurebackpack:skin.name.ocelot=Ocelote
+adventurebackpack:skin.name.orange=Laranja
+adventurebackpack:skin.name.overworld=Overworld
+adventurebackpack:skin.name.pig=Porco
+adventurebackpack:skin.name.pigman=Pigman
+adventurebackpack:skin.name.pink=Rosa
+adventurebackpack:skin.name.pumpkin=Abóbora
+adventurebackpack:skin.name.purple=Roxo
+adventurebackpack:skin.name.quartz=Quartzo
+adventurebackpack:skin.name.rainbow=Arco-Íris
+adventurebackpack:skin.name.red=Vermelho
+adventurebackpack:skin.name.red_mushroom=Cogumelo Vermelho
+adventurebackpack:skin.name.redstone=Redstone
+adventurebackpack:skin.name.sandstone=Arenito
+adventurebackpack:skin.name.sheep=Ovelha
+adventurebackpack:skin.name.silverfish=Silverfish
+adventurebackpack:skin.name.skeleton=Esqueleto
+adventurebackpack:skin.name.slime=Slime
+adventurebackpack:skin.name.snow=Neve
+adventurebackpack:skin.name.spider=Aranha
+adventurebackpack:skin.name.sponge=Esponja
+adventurebackpack:skin.name.squid=Lula
+adventurebackpack:skin.name.sunflower=Girassol
+adventurebackpack:skin.name.villager=Vilão
+adventurebackpack:skin.name.white=Branco
+adventurebackpack:skin.name.wither=Wither
+adventurebackpack:skin.name.wither_skeleton=Esqueleto Wither
+adventurebackpack:skin.name.wolf=Lobo
+adventurebackpack:skin.name.yellow=Amarelo
+adventurebackpack:skin.name.zombie=Zumbi
+adventurebackpack:skin.name.unknown=DESCONHECIDO
