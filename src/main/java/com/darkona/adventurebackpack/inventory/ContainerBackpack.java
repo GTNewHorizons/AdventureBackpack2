@@ -36,7 +36,7 @@ public class ContainerBackpack extends ContainerAdventure {
     private static final int CRAFT_RESULT = BUCKET_RIGHT + 2 + (MATRIX_DIMENSION * MATRIX_DIMENSION);
     private static final int[] CRAFT_MATRIX_EMULATION = findCraftMatrixEmulationIDs();
 
-    private final InventoryCraftingBackpack craftMatrix = new InventoryCraftingBackpack(
+    protected final InventoryCraftingBackpack craftMatrix = new InventoryCraftingBackpack(
             this,
             MATRIX_DIMENSION,
             MATRIX_DIMENSION);

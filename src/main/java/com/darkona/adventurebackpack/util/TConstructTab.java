@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.util.ResourceLocation;
 
@@ -25,7 +26,7 @@ public class TConstructTab {
     }
 
     public static void addTabsToList(List<?> buttonList) {
-        TabRegistry.addTabsToList(buttonList);
+        TabRegistry.addTabsToList((List<GuiButton>) buttonList);
     }
 
     public static class Tab extends AbstractTab {
