@@ -5,6 +5,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
 import tconstruct.library.modifier.IModifyable;
 import tconstruct.library.tools.AbilityHelper;
 
@@ -22,8 +23,7 @@ public class SlotCraftResult extends SlotCrafting {
     public void onPickupFromSlot(EntityPlayer player, ItemStack stack) {
         eventHandler.syncCraftMatrixWithInventory(true); // pre craft sync
         ItemStack tool = eventHandler.craftMatrix.getStackInSlot(4);
-        if (stack.getItem() instanceof IModifyable && tool != null
-                && tool.getItem() instanceof IModifyable) {
+        if (stack.getItem() instanceof IModifyable && tool != null && tool.getItem() instanceof IModifyable) {
             IModifyable modifyable = (IModifyable) stack.getItem();
             NBTTagCompound tags = stack.getTagCompound().getCompoundTag(modifyable.getBaseTagName());
             int[] toRemoveArray = tags.hasKey("ToRemove") ? tags.getIntArray("ToRemove") : null;
