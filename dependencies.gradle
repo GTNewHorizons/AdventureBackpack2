@@ -4,5 +4,5 @@ dependencies {
     api("com.github.GTNewHorizons:waila:1.19.22:dev")
     api("com.github.GTNewHorizons:NotEnoughItems:2.8.72-GTNH:dev")
 
-    devOnlyNonPublishable("com.github.GTNewHorizons:TinkersConstruct:1.14.32-GTNH:dev")
+    devOnlyNonPublishable("com.github.GTNewHorizons:TinkersConstruct:1.14.86-GTNH:dev")
 }
