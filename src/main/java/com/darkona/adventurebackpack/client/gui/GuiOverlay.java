@@ -18,6 +18,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -30,11 +31,8 @@ import com.darkona.adventurebackpack.inventory.IInventoryTanks;
 import com.darkona.adventurebackpack.item.ItemHose;
 import com.darkona.adventurebackpack.reference.LoadedMods;
 import com.darkona.adventurebackpack.reference.ModInfo;
-import com.darkona.adventurebackpack.reference.ToolHandler;
-import com.darkona.adventurebackpack.util.GregtechUtils;
 import com.darkona.adventurebackpack.util.LogHelper;
 import com.darkona.adventurebackpack.util.ThaumcraftUtils;
-import com.darkona.adventurebackpack.util.TinkersUtils;
 import com.darkona.adventurebackpack.util.Wearing;
 
 import codechicken.lib.render.TextureUtils;
@@ -177,16 +175,14 @@ public class GuiOverlay extends Gui {
                     drawTexturedModalRect(xStart[1], yStart[0], u[1], v[1], textureWidth, textureHeight); // Right Tank
                     RenderHelper.enableStandardItemLighting();
                     RenderHelper.enableGUIStandardItemLighting();
-                    GL11.glPushMatrix();
-                    GL11.glTranslatef(xStart[0] - textureWidth, yStart[0], 0);
-                    GL11.glScalef(0.5f, 0.5f, 0.5f);
                     if (ConfigHandler.enableToolsRender) {
                         ItemStack upperStack = inv.getStackInSlot(Constants.TOOL_UPPER);
                         ItemStack lowerStack = inv.getStackInSlot(Constants.TOOL_LOWER);
-                        drawItemStack(upperStack, ToolHandler.getToolHandler(upperStack), 0, 0);
-                        drawItemStack(lowerStack, ToolHandler.getToolHandler(lowerStack), 0, 16);
+                        int itemX = xStart[0] - textureWidth;
+                        int itemY = yStart[0];
+                        drawItemStack(upperStack, itemX, itemY);
+                        drawItemStack(lowerStack, itemX, itemY + 8);
                     }
-                    GL11.glPopMatrix();
                     RenderHelper.disableStandardItemLighting();
                 }
             }
@@ -220,44 +216,36 @@ public class GuiOverlay extends Gui {
         }
     }
 
-    private void drawItemStack(ItemStack stack, ToolHandler toolHandler, int x, int y) {
+    private void drawItemStack(ItemStack stack, int x, int y) {
         if (stack == null) return;
 
         this.zLevel = 200.0F;
         itemRender.zLevel = 200.0F;
 
-        switch (toolHandler) {
-            case GREGTECH:
-                GL11.glTranslatef(x, y, 32.0F);
-                GregtechUtils.renderTool(stack, IItemRenderer.ItemRenderType.INVENTORY);
-                break;
-            case TCONSTRUCT:
-                TextureManager tm = mc.getTextureManager();
-                tm.bindTexture(tm.getResourceLocation(stack.getItemSpriteNumber()));
-                GL11.glTranslatef(x, y, 32.0F);
-                TinkersUtils.renderTool(stack, IItemRenderer.ItemRenderType.INVENTORY);
-                break;
-            case THAUMCRAFT:
-                // Forge PreRender: net.minecraftforge.client.ForgeHooksClient.renderInventoryItem
-                GL11.glPushMatrix();
-                GL11.glTranslatef(x - 2, y + 3, -3.0F + zLevel);
-                GL11.glScalef(10F, 10F, 10F);
-                GL11.glTranslatef(1.0F, 0.5F, 1.0F);
-                GL11.glScalef(1.0F, 1.0F, -1F);
-                GL11.glRotatef(210F, 1.0F, 0.0F, 0.0F);
-                GL11.glRotatef(-135F, 0.0F, 1.0F, 0.0F);
-                // Thaumcraft Render
-                ThaumcraftUtils.renderTool(stack, IItemRenderer.ItemRenderType.INVENTORY);
-                GL11.glPopMatrix();
-                break;
-            case VANILLA:
-            default:
-                GL11.glTranslatef(0F, 0F, 32.0F);
-                FontRenderer font = stack.getItem().getFontRenderer(stack);
-                if (font == null) font = fontRenderer;
-                itemRender.renderItemIntoGUI(font, mc.getTextureManager(), stack, x, y);
-                break;
+        IItemRenderer customRenderer = MinecraftForgeClient
+                .getItemRenderer(stack, IItemRenderer.ItemRenderType.INVENTORY);
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(x, y, 32.0F);
+        GL11.glScalef(0.5f, 0.5f, 0.5f);
+
+        if (customRenderer != null) {
+            TextureManager tm = mc.getTextureManager();
+            tm.bindTexture(tm.getResourceLocation(stack.getItemSpriteNumber()));
+            if (customRenderer.shouldUseRenderHelper(
+                    IItemRenderer.ItemRenderType.INVENTORY,
+                    stack,
+                    IItemRenderer.ItemRendererHelper.INVENTORY_BLOCK)) {
+                RenderHelper.enableGUIStandardItemLighting();
+            }
+            customRenderer.renderItem(IItemRenderer.ItemRenderType.INVENTORY, stack);
+        } else {
+            FontRenderer font = stack.getItem().getFontRenderer(stack);
+            if (font == null) font = fontRenderer;
+            itemRender.renderItemIntoGUI(font, mc.getTextureManager(), stack, 0, 0);
         }
+
+        GL11.glPopMatrix();
 
         this.zLevel = 0.0F;
         itemRender.zLevel = 0.0F;
