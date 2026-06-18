@@ -74,7 +74,6 @@ public class RendererStack extends ModelRenderer {
         }
 
         private float getToolRotationAngle(ItemStack stack, boolean isLowerSlot) {
-
             if (GregtechUtils.isTool(stack)) return GregtechUtils.getToolRotationAngle(stack, isLowerSlot);
             if (TinkersUtils.isTool(stack)) return TinkersUtils.getToolRotationAngle(stack, isLowerSlot);
             if (ThaumcraftUtils.isTool(stack)) return ThaumcraftUtils.getToolRotationAngle(stack, isLowerSlot);

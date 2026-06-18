@@ -12,7 +12,6 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.FakePlayer;
 
 import com.darkona.adventurebackpack.reference.LoadedMods;
@@ -30,8 +29,6 @@ public final class TinkersUtils {
     private static final String FIELD_CRAFT_MATRIX = "craftMatrix";
     private static final String FIELD_CRAFT_RESULT = "craftResult";
 
-    private static final String CLASS_RENDERER = "tconstruct.client.FlexibleToolRenderer";
-
     private static final String PACKAGE_TCONSTRUCT = "tconstruct";
     private static final String PACKAGE_TOOLS = "tconstruct.items.tools";
     private static final String PACKAGE_AMMO = "tconstruct.weaponry.ammo"; // arrows and bolts
@@ -40,15 +37,11 @@ public final class TinkersUtils {
     private static Class<?> craftingStation;
     private static Object craftingStationInstance;
 
-    private static Class<?> toolRenderer;
-    private static Object toolRendererInstance;
-
     private TinkersUtils() {}
 
     static {
         if (LoadedMods.TCONSTRUCT) {
             createCraftingStationInstance();
-            createToolRendererInstance();
         }
     }
 
@@ -78,17 +71,6 @@ public final class TinkersUtils {
             invPlayer = Minecraft.getMinecraft().thePlayer.inventory;
         }
         return invPlayer;
-    }
-
-    private static void createToolRendererInstance() {
-        if (Utils.inClient()) {
-            try {
-                toolRenderer = Class.forName(CLASS_RENDERER);
-                toolRendererInstance = toolRenderer.getConstructor().newInstance();
-            } catch (Exception e) {
-                LogHelper.error("Error getting instance of Tinkers Tool Renderer: " + e);
-            }
-        }
     }
 
     public static boolean isToolOrWeapon(@Nullable ItemStack stack) {
@@ -127,9 +109,5 @@ public final class TinkersUtils {
 
     public static float getToolRotationAngle(ItemStack stack, boolean isLowerSlot) {
         return isLowerSlot ? -45F : 45F;
-    }
-
-    public static void renderTool(ItemStack stack, IItemRenderer.ItemRenderType renderType) {
-        ToolRenderHelper.render(stack, renderType, toolRenderer, toolRendererInstance);
     }
 }
