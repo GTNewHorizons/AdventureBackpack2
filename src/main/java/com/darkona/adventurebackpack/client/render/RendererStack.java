@@ -1,5 +1,6 @@
 package com.darkona.adventurebackpack.client.render;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -56,9 +57,14 @@ public class RendererStack extends ModelRenderer {
             }
             GL11.glRotatef(getToolRotationAngle(stack, isLowerSlot), 0, 0, 1);
 
-            renderEntity.setEntityItemStack(stack);
-            renderEntity.hoverStart = 0.0F;
-            RenderManager.instance.renderEntityWithPosYaw(renderEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+            try {
+                renderEntity.setEntityItemStack(stack);
+                renderEntity.setWorld(Minecraft.getMinecraft().theWorld);
+                renderEntity.hoverStart = 0.0F;
+                RenderManager.instance.renderEntityWithPosYaw(renderEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+            } finally {
+                renderEntity.setWorld(null);
+            }
 
             GL11.glPopAttrib();
             GL11.glPopMatrix();
