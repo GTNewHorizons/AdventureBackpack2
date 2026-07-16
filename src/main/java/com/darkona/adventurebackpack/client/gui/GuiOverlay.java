@@ -216,9 +216,6 @@ public class GuiOverlay extends Gui {
     private void drawItemStack(ItemStack stack, int x, int y) {
         if (stack == null) return;
 
-        this.zLevel = 200.0F;
-        itemRender.zLevel = 200.0F;
-
         GL11.glPushMatrix();
         GL11.glTranslatef(x, y, 32.0F);
         GL11.glScalef(0.5f, 0.5f, 0.5f);
@@ -228,9 +225,6 @@ public class GuiOverlay extends Gui {
         itemRender.renderItemAndEffectIntoGUI(font, mc.getTextureManager(), stack, 0, 0);
 
         GL11.glPopMatrix();
-
-        this.zLevel = 0.0F;
-        itemRender.zLevel = 0.0F;
     }
 
     private void drawBossBar() {
