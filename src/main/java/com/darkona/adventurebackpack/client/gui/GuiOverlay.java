@@ -8,7 +8,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -17,8 +16,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -222,28 +219,13 @@ public class GuiOverlay extends Gui {
         this.zLevel = 200.0F;
         itemRender.zLevel = 200.0F;
 
-        IItemRenderer customRenderer = MinecraftForgeClient
-                .getItemRenderer(stack, IItemRenderer.ItemRenderType.INVENTORY);
-
         GL11.glPushMatrix();
         GL11.glTranslatef(x, y, 32.0F);
         GL11.glScalef(0.5f, 0.5f, 0.5f);
 
-        if (customRenderer != null) {
-            TextureManager tm = mc.getTextureManager();
-            tm.bindTexture(tm.getResourceLocation(stack.getItemSpriteNumber()));
-            if (customRenderer.shouldUseRenderHelper(
-                    IItemRenderer.ItemRenderType.INVENTORY,
-                    stack,
-                    IItemRenderer.ItemRendererHelper.INVENTORY_BLOCK)) {
-                RenderHelper.enableGUIStandardItemLighting();
-            }
-            customRenderer.renderItem(IItemRenderer.ItemRenderType.INVENTORY, stack);
-        } else {
-            FontRenderer font = stack.getItem().getFontRenderer(stack);
-            if (font == null) font = fontRenderer;
-            itemRender.renderItemIntoGUI(font, mc.getTextureManager(), stack, 0, 0);
-        }
+        FontRenderer font = stack.getItem().getFontRenderer(stack);
+        if (font == null) font = fontRenderer;
+        itemRender.renderItemAndEffectIntoGUI(font, mc.getTextureManager(), stack, 0, 0);
 
         GL11.glPopMatrix();
 
