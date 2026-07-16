@@ -1,12 +1,11 @@
 package com.darkona.adventurebackpack.client.render;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -19,8 +18,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class RendererStack extends ModelRenderer {
 
-    private static final Minecraft MC = Minecraft.getMinecraft();
-
     private final boolean isLowerSlot;
     private ItemStack stack;
 
@@ -29,6 +26,8 @@ public class RendererStack extends ModelRenderer {
         this.isLowerSlot = isLowerSlot;
         addChild(new Thing(modelBase));
     }
+
+    private final EntityItem renderEntity = new EntityItem(null, 0, 0, 0, new ItemStack(Items.feather));
 
     public void setStack(ItemStack stack) {
         this.stack = stack;
@@ -45,28 +44,21 @@ public class RendererStack extends ModelRenderer {
         public void render(float par1) {
             if (stack == null) return;
 
-            IItemRenderer customRenderer = MinecraftForgeClient
-                    .getItemRenderer(stack, IItemRenderer.ItemRenderType.ENTITY);
-
             GL11.glPushMatrix();
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
             if (isLowerSlot) {
-                GL11.glScalef(0.6F, 0.6F, 0.6F);
+                GL11.glScalef(0.8F, 0.8F, 0.8F);
                 GL11.glPushMatrix();
                 GL11.glRotatef(-90F, 0, 1, 0);
             } else {
-                GL11.glScalef(0.7F, 0.7F, 0.7F);
+                GL11.glScalef(0.9F, 0.9F, 0.9F);
                 GL11.glPushMatrix();
             }
             GL11.glRotatef(getToolRotationAngle(stack, isLowerSlot), 0, 0, 1);
 
-            if (customRenderer != null) {
-                TextureManager tm = MC.getTextureManager();
-                tm.bindTexture(tm.getResourceLocation(stack.getItemSpriteNumber()));
-                customRenderer.renderItem(IItemRenderer.ItemRenderType.ENTITY, stack);
-            } else {
-                CopygirlRenderUtils.renderItemIn3d(stack);
-            }
+            renderEntity.setEntityItemStack(stack);
+            renderEntity.hoverStart = 0.0F;
+            RenderManager.instance.renderEntityWithPosYaw(renderEntity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
 
             GL11.glPopAttrib();
             GL11.glPopMatrix();
