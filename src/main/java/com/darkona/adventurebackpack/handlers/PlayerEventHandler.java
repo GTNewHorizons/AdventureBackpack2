@@ -12,15 +12,14 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 
 import com.darkona.adventurebackpack.block.BlockSleepingBag;
@@ -33,7 +32,6 @@ import com.darkona.adventurebackpack.init.ModItems;
 import com.darkona.adventurebackpack.item.IBackWearableItem;
 import com.darkona.adventurebackpack.item.ItemAdventureBackpack;
 import com.darkona.adventurebackpack.playerProperties.BackpackProperty;
-import com.darkona.adventurebackpack.proxy.ServerProxy;
 import com.darkona.adventurebackpack.reference.BackpackTypes;
 import com.darkona.adventurebackpack.util.LogHelper;
 import com.darkona.adventurebackpack.util.PotionAndEnchantUtils;
@@ -62,15 +60,12 @@ public class PlayerEventHandler {
     }
 
     @SubscribeEvent
-    public void joinPlayer(EntityJoinWorldEvent event) {
-        if (!event.world.isRemote && event.entity instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) event.entity;
-            NBTTagCompound playerData = ServerProxy.extractPlayerProps(player.getUniqueID());
-            if (playerData != null) {
-                BackpackProperty.get(player).loadNBTData(playerData);
-                BackpackProperty.sync(player);
-                LogHelper.info("Stored properties retrieved");
-            }
+    public void clonePlayer(Clone event) {
+        BackpackProperty original = BackpackProperty.get(event.original);
+        BackpackProperty clone = BackpackProperty.get(event.entityPlayer);
+
+        if (original != null && clone != null && original != clone) {
+            clone.loadNBTData(original.getData());
         }
     }
 
@@ -174,7 +169,6 @@ public class PlayerEventHandler {
                             || PotionAndEnchantUtils.hasStickyItems(player)) {
                         ((IBackWearableItem) props.getWearable().getItem())
                                 .onPlayerDeath(player.worldObj, player, props.getWearable());
-                        ServerProxy.storePlayerProps(player);
                     }
                 }
             }
@@ -194,7 +188,6 @@ public class PlayerEventHandler {
                     || (ConfigHandler.backpackDeathPlace && pack.getItem() instanceof ItemAdventureBackpack)) {
                 ((IBackWearableItem) props.getWearable().getItem())
                         .onPlayerDeath(player.worldObj, player, props.getWearable());
-                ServerProxy.storePlayerProps(player);
             } else {
                 event.drops.add(new EntityItem(player.worldObj, player.posX, player.posY, player.posZ, pack));
                 props.setWearable(null);

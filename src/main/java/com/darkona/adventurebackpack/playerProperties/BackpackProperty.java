@@ -52,10 +52,13 @@ public class BackpackProperty implements IExtendedEntityProperties {
 
     private static void syncToNear(EntityPlayerMP player) {
         try {
-            player.getServerForPlayer().getEntityTracker().func_151248_b(
-                    player,
-                    ModNetwork.net.getPacketFrom(
-                            new SyncPropertiesPacket.Message(player.getEntityId(), get(player).getData())));
+            SyncPropertiesPacket.Message message = new SyncPropertiesPacket.Message(
+                    player.getEntityId(),
+                    get(player).getData());
+
+            // The player is temporarily absent from the destination world's tracker during some teleports
+            ModNetwork.net.sendTo(message, player);
+            player.getServerForPlayer().getEntityTracker().func_151247_a(player, ModNetwork.net.getPacketFrom(message));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
