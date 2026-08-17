@@ -158,10 +158,12 @@ public class ItemCoalJetpack extends ItemAdventure {
     }
 
     private static void elevate(EntityPlayer player) {
-        if (player.posY < 135) if (player.motionY <= 0.32) player.motionY += 0.1;
-        else player.motionY = Math.max(player.motionY, 0.32);
-        else if (player.posY < 185) player.motionY = 0.32 - (player.posY - 135) / 160;
-        else if (player.posY >= 185) player.motionY += 0;
+        double thrustCutoffSpeed;
+        if (player.posY < 135) thrustCutoffSpeed = 0.32;
+        else if (player.posY < 185) thrustCutoffSpeed = 0.32 - (player.posY - 135) / 160;
+        else return;
+
+        if (player.motionY <= thrustCutoffSpeed) player.motionY += 0.1;
     }
 
     private void runBoiler(InventoryCoalJetpack inv, World world, EntityPlayer player) {
