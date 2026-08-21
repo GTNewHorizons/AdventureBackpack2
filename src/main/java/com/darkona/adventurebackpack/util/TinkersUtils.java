@@ -37,11 +37,22 @@ public final class TinkersUtils {
     private static Class<?> craftingStation;
     private static Object craftingStationInstance;
 
+    private static final String CLASS_IMODIFYABLE = "tconstruct.library.modifier.IModifyable";
+    private static Class<?> modifyableClass;
+    private static java.lang.reflect.Method getBaseTagNameMethod;
+
     private TinkersUtils() {}
 
     static {
         if (LoadedMods.TCONSTRUCT) {
             createCraftingStationInstance();
+
+            try {
+                modifyableClass = Class.forName(CLASS_IMODIFYABLE);
+                getBaseTagNameMethod = modifyableClass.getMethod("getBaseTagName");
+            } catch (Exception e) {
+                LogHelper.error("Error getting Tinkers IModifyable class or getBaseTagName method: " + e);
+            }
         }
     }
 
@@ -71,6 +82,25 @@ public final class TinkersUtils {
             invPlayer = Minecraft.getMinecraft().thePlayer.inventory;
         }
         return invPlayer;
+    }
+
+    public static boolean isModifyable(ItemStack stack) {
+        if (!LoadedMods.TCONSTRUCT || stack == null || stack.getItem() == null || modifyableClass == null) return false;
+        return modifyableClass.isInstance(stack.getItem());
+    }
+
+    public static String getBaseTagName(ItemStack stack) {
+        if (!LoadedMods.TCONSTRUCT || stack == null
+                || stack.getItem() == null
+                || modifyableClass == null
+                || getBaseTagNameMethod == null)
+            return "InfiTool";
+        try {
+            if (modifyableClass.isInstance(stack.getItem())) {
+                return (String) getBaseTagNameMethod.invoke(stack.getItem());
+            }
+        } catch (Exception e) {}
+        return "InfiTool";
     }
 
     public static boolean isToolOrWeapon(@Nullable ItemStack stack) {

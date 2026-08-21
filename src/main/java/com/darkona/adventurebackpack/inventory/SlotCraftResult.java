@@ -6,8 +6,7 @@ import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import tconstruct.library.modifier.IModifyable;
-import tconstruct.library.tools.AbilityHelper;
+import com.darkona.adventurebackpack.util.TinkersUtils;
 
 public class SlotCraftResult extends SlotCrafting {
 
@@ -23,9 +22,9 @@ public class SlotCraftResult extends SlotCrafting {
     public void onPickupFromSlot(EntityPlayer player, ItemStack stack) {
         eventHandler.syncCraftMatrixWithInventory(true); // pre craft sync
         ItemStack tool = eventHandler.craftMatrix.getStackInSlot(4);
-        if (stack.getItem() instanceof IModifyable && tool != null && tool.getItem() instanceof IModifyable) {
-            IModifyable modifyable = (IModifyable) stack.getItem();
-            NBTTagCompound tags = stack.getTagCompound().getCompoundTag(modifyable.getBaseTagName());
+        if (TinkersUtils.isModifyable(stack) && TinkersUtils.isModifyable(tool)) {
+            String tagName = TinkersUtils.getBaseTagName(stack);
+            NBTTagCompound tags = stack.getTagCompound().getCompoundTag(tagName);
             int[] toRemoveArray = tags.hasKey("ToRemove") ? tags.getIntArray("ToRemove") : null;
             int toRemoveIndex = 0;
             IInventory inventory = eventHandler.craftMatrix;
@@ -52,7 +51,7 @@ public class SlotCraftResult extends SlotCrafting {
                     player.posZ,
                     "tinker:little_saw",
                     1.0F,
-                    (AbilityHelper.random.nextFloat() - AbilityHelper.random.nextFloat()) * 0.2F + 1.0F);
+                    (player.worldObj.rand.nextFloat() - player.worldObj.rand.nextFloat()) * 0.2F + 1.0F);
         } else {
             super.onPickupFromSlot(player, stack);
         }
