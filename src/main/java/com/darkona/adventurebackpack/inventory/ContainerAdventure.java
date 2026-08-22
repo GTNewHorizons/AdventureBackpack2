@@ -2,7 +2,6 @@ package com.darkona.adventurebackpack.inventory;
 
 import javax.annotation.Nullable;
 
-import com.darkona.adventurebackpack.playerProperties.BackpackProperty;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -28,7 +27,7 @@ public abstract class ContainerAdventure extends Container {
 
     private final int[] fluidsAmount;
     private int itemsCount;
-    private boolean requestedUpdate;
+    protected boolean requestedUpdate;
     public boolean skipFluidSlots;
 
     protected ContainerAdventure(EntityPlayer player, IInventoryTanks inventory, Source source) {
@@ -55,20 +54,12 @@ public abstract class ContainerAdventure extends Container {
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
 
-        if (source != Source.TILE) // used for refresh tooltips and redraw tanks content while GUI is open
+        if (source == Source.HOLDING) // used for refresh tooltips and redraw tanks content while GUI is open
         {
-            // We can expect when you have the inventory open to be seeing the inventory change without a player 
-            // editing it directly. For example, fuel lowering in a tank during flight.
-            if (source == Source.WEARING) 
-            {
-                inventory.openInventory();
-            }   
             // check if parent item is gone
             ItemStack parentItem = inventory.getParentItem();
             if (parentItem != null) {
-                
-                ItemStack stack = source == Source.HOLDING ? player.getCurrentEquippedItem() : BackpackProperty.get(player).getWearable();
-                if (!ItemStack.areItemStacksEqual(stack, parentItem)) {
+                if (!ItemStack.areItemStacksEqual(player.getCurrentEquippedItem(), parentItem)) {
                     player.closeScreen();
                     return;
                 }
@@ -100,7 +91,7 @@ public abstract class ContainerAdventure extends Container {
         return false;
     }
 
-    private boolean detectFluidChanges() {
+    protected boolean detectFluidChanges() {
         boolean changesDetected = false;
         for (int i = 0; i < fluidsAmount.length; i++) {
             int amount = inventory.getTanksArray()[i].getFluidAmount();

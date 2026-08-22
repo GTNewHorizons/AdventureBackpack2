@@ -67,7 +67,6 @@ public class GuiCopterPack extends GuiWithTanks {
 
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
-        // inventory.loadFromNBT(source == Source.WEARING ? Wearing.getWearingCopter(player).getTagCompound() : Wearing.getHoldingCopter(player).getTagCompound());
         inventory.openInventory();
         FluidTank tank = inventory.getFuelTank();
         fuelTank.draw(this, tank);
@@ -75,7 +74,9 @@ public class GuiCopterPack extends GuiWithTanks {
         GL11.glPushMatrix();
         boolean isFilled = tank.getFluid() != null;
         String name = isFilled ? WordUtils.capitalize(tank.getFluid().getLocalizedName()) : "None";
-        String amount = isFilled ? "" + tank.getFluid().amount : "0";
+        int displayedAmount = ((ContainerCopter) inventorySlots)
+                .getInterpolatedFuelAmount(tank.getCapacity());
+        String amount = isFilled ? "" + displayedAmount : "0";
         String capacity = Integer.toString(tank.getCapacity());
         int offsetY = 8;
         int offsetX = 70;
