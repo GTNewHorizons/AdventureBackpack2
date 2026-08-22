@@ -17,7 +17,6 @@ import com.darkona.adventurebackpack.inventory.InventoryCopterPack;
 import com.darkona.adventurebackpack.reference.GeneralReference;
 import com.darkona.adventurebackpack.util.Resources;
 import com.darkona.adventurebackpack.util.TipUtils;
-import com.darkona.adventurebackpack.util.Wearing;
 
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerTooltipHandler;
@@ -30,9 +29,12 @@ public class GuiCopterPack extends GuiWithTanks {
     private static final GuiImageButtonNormal unequipButton = new GuiImageButtonNormal(150, 64, 18, 18);
     private static final GuiTank fuelTank = new GuiTank(8, 8, 72, 32, ConfigHandler.typeTankRender);
 
+    private final InventoryCopterPack inventory;
+
     public GuiCopterPack(EntityPlayer player, InventoryCopterPack inv, Source source) {
         super(new ContainerCopter(player, inv, source));
         this.player = player;
+        inventory = inv;
         this.source = source;
         xSize = 176;
         ySize = 166;
@@ -65,10 +67,8 @@ public class GuiCopterPack extends GuiWithTanks {
 
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
-        InventoryCopterPack inventory = new InventoryCopterPack(Wearing.getWearingCopter(player)); // We gotta do this
-                                                                                                   // or we don't update
-                                                                                                   // the
-        // fluid amount. In the future this should be done with a better EntityProperties Implementation.
+        // inventory.loadFromNBT(source == Source.WEARING ? Wearing.getWearingCopter(player).getTagCompound() : Wearing.getHoldingCopter(player).getTagCompound());
+        inventory.openInventory();
         FluidTank tank = inventory.getFuelTank();
         fuelTank.draw(this, tank);
 

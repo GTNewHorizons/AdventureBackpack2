@@ -2,6 +2,7 @@ package com.darkona.adventurebackpack.inventory;
 
 import javax.annotation.Nullable;
 
+import com.darkona.adventurebackpack.playerProperties.BackpackProperty;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -54,12 +55,20 @@ public abstract class ContainerAdventure extends Container {
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
 
-        if (source == Source.HOLDING) // used for refresh tooltips and redraw tanks content while GUI is open
+        if (source != Source.TILE) // used for refresh tooltips and redraw tanks content while GUI is open
         {
+            // We can expect when you have the inventory open to be seeing the inventory change without a player 
+            // editing it directly. For example, fuel lowering in a tank during flight.
+            if (source == Source.WEARING) 
+            {
+                inventory.openInventory();
+            }   
             // check if parent item is gone
             ItemStack parentItem = inventory.getParentItem();
             if (parentItem != null) {
-                if (!ItemStack.areItemStacksEqual(player.getCurrentEquippedItem(), parentItem)) {
+                
+                ItemStack stack = source == Source.HOLDING ? player.getCurrentEquippedItem() : BackpackProperty.get(player).getWearable();
+                if (!ItemStack.areItemStacksEqual(stack, parentItem)) {
                     player.closeScreen();
                     return;
                 }
