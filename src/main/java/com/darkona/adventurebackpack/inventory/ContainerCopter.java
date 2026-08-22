@@ -3,7 +3,6 @@ package com.darkona.adventurebackpack.inventory;
 import static com.darkona.adventurebackpack.common.Constants.Copter.BUCKET_IN;
 import static com.darkona.adventurebackpack.common.Constants.Copter.BUCKET_OUT;
 
-import com.darkona.adventurebackpack.playerProperties.BackpackProperty;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -12,16 +11,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
 
 import com.darkona.adventurebackpack.common.Constants.Source;
+import com.darkona.adventurebackpack.playerProperties.BackpackProperty;
 
 public class ContainerCopter extends ContainerAdventure {
 
     private static final int COPTER_INV_START = PLAYER_INV_END + 1;
-    
+
     // client-side interpolation state
     private float fuelAnchorAmount = -1;
     private long fuelAnchorTick = 0;
-    private float fuelStepAmount = 0; // consumption per 3-tick interval   
-    
+    private float fuelStepAmount = 0; // consumption per 3-tick interval
+
     public ContainerCopter(EntityPlayer player, InventoryCopterPack copter, Source source) {
         super(player, copter, source);
         makeSlots(player.inventory);
@@ -94,7 +94,7 @@ public class ContainerCopter extends ContainerAdventure {
             }
         }
     }
-    
+
     // We abuse this to show the fluid amount in the tank. Idk a better way to do this.
     @Override
     public void updateProgressBar(int id, int value) {
@@ -127,7 +127,7 @@ public class ContainerCopter extends ContainerAdventure {
         if (displayed > capacity) displayed = capacity;
         return Math.round(displayed);
     }
-    
+
     private boolean mergeBucket(ItemStack stack) {
         return mergeItemStack(stack, COPTER_INV_START, COPTER_INV_START + 1, false);
     }

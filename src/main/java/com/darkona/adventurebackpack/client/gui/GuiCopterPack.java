@@ -74,8 +74,7 @@ public class GuiCopterPack extends GuiWithTanks {
         GL11.glPushMatrix();
         boolean isFilled = tank.getFluid() != null;
         String name = isFilled ? WordUtils.capitalize(tank.getFluid().getLocalizedName()) : "None";
-        int displayedAmount = ((ContainerCopter) inventorySlots)
-                .getInterpolatedFuelAmount(tank.getCapacity());
+        int displayedAmount = ((ContainerCopter) inventorySlots).getInterpolatedFuelAmount(tank.getCapacity());
         String amount = isFilled ? "" + displayedAmount : "0";
         String capacity = Integer.toString(tank.getCapacity());
         int offsetY = 8;

@@ -108,7 +108,13 @@ public class ItemCopterPack extends ItemAdventure {
         inv.openInventory();
         boolean canElevate = true;
         float fuelConsumption = 0.0f;
-        if (inv.getStatus() != OFF_MODE) {
+        if (inv.getStatus() == OFF_MODE) {
+            if (player.capabilities.allowFlying || player.capabilities.isFlying) {
+                player.capabilities.allowFlying = false;
+                player.capabilities.isFlying = false;
+                player.sendPlayerAbilities();
+            }
+        } else {
             if (player.isInWater()) {
                 if (!world.isRemote) {
                     inv.setStatus(OFF_MODE);
@@ -143,6 +149,11 @@ public class ItemCopterPack extends ItemAdventure {
                     return;
                     // TODO play "outofFuel" sound
                 }
+            }
+            if (!player.capabilities.allowFlying || !player.capabilities.isFlying) {
+                player.capabilities.allowFlying = true;
+                player.capabilities.isFlying = true;
+                player.sendPlayerAbilities();
             }
         }
 
@@ -189,12 +200,11 @@ public class ItemCopterPack extends ItemAdventure {
                     }
                 }
             }
-            
+
             // Weirdly, I think this is okay to have on the client.
             // The client only ever uses this for displaying what is going on in the GUI.
             // We can just sync it occasionally below.
-            if (!world.isRemote)
-            {
+            if (!world.isRemote) {
                 if (!player.onGround && player.motionY > 0) {
                     fuelConsumption *= 2;
                 }
