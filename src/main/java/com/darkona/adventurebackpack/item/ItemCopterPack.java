@@ -27,7 +27,6 @@ import com.darkona.adventurebackpack.init.ModNetwork;
 import com.darkona.adventurebackpack.inventory.InventoryCopterPack;
 import com.darkona.adventurebackpack.network.GUIPacket;
 import com.darkona.adventurebackpack.network.messages.EntityParticlePacket;
-import com.darkona.adventurebackpack.playerProperties.BackpackProperty;
 import com.darkona.adventurebackpack.proxy.ClientProxy;
 import com.darkona.adventurebackpack.reference.GeneralReference;
 import com.darkona.adventurebackpack.util.BackpackUtils;
