@@ -201,9 +201,6 @@ public class ItemCopterPack extends ItemAdventure {
                 }
             }
 
-            // Weirdly, I think this is okay to have on the client.
-            // The client only ever uses this for displaying what is going on in the GUI.
-            // We can just sync it occasionally below.
             if (!world.isRemote) {
                 if (!player.onGround && player.motionY > 0) {
                     fuelConsumption *= 2;
