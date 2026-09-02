@@ -7,7 +7,6 @@ import static com.darkona.adventurebackpack.common.Constants.BUCKET_OUT_RIGHT;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_LOWER;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_UPPER;
 
-import com.darkona.adventurebackpack.util.TinkerCraftingStationBridge;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -21,6 +20,7 @@ import net.minecraftforge.fluids.FluidTank;
 import com.darkona.adventurebackpack.common.Constants;
 import com.darkona.adventurebackpack.common.Constants.Source;
 import com.darkona.adventurebackpack.config.ConfigHandler;
+import com.darkona.adventurebackpack.util.TinkerCraftingStationBridge;
 import com.darkona.adventurebackpack.util.TinkersUtils;
 
 public class ContainerBackpack extends ContainerAdventure {
@@ -60,13 +60,12 @@ public class ContainerBackpack extends ContainerAdventure {
         int startX = 62;
         int startY = 7;
         for (int row = 0; row < BACK_INV_ROWS; row++) // 6*8 inventory, 48 Slots (#1-#48) [36-83]
-            for (int col = 0; col < BACK_INV_COLUMNS; col++)
-                addSlotToContainer(
-                        new SlotBackpack(
-                                inventory,
-                                (row * BACK_INV_COLUMNS + col),
-                                (startX + 18 * col),
-                                (startY + 18 * row)));
+            for (int col = 0; col < BACK_INV_COLUMNS; col++) addSlotToContainer(
+                    new SlotBackpack(
+                            inventory,
+                            (row * BACK_INV_COLUMNS + col),
+                            (startX + 18 * col),
+                            (startY + 18 * row)));
 
         addSlotToContainer(new SlotTool(inventory, TOOL_UPPER, 44, 79)); // #49 [84]
         addSlotToContainer(new SlotTool(inventory, TOOL_LOWER, 44, 97)); // #50 [85]
@@ -79,13 +78,12 @@ public class ContainerBackpack extends ContainerAdventure {
         startX = 215;
         startY = -2500; // startY = LoadedMods.DEV_ENV ? 125 : -2500;
         for (int row = 0; row < MATRIX_DIMENSION; row++) // craftMatrix, usually 9 slots, [90-98]
-            for (int col = 0; col < MATRIX_DIMENSION; col++)
-                addSlotToContainer(
-                        new SlotCraftMatrix(
-                                craftMatrix,
-                                (row * MATRIX_DIMENSION + col),
-                                (startX + 18 * col),
-                                (startY + 18 * row)));
+            for (int col = 0; col < MATRIX_DIMENSION; col++) addSlotToContainer(
+                    new SlotCraftMatrix(
+                            craftMatrix,
+                            (row * MATRIX_DIMENSION + col),
+                            (startX + 18 * col),
+                            (startY + 18 * row)));
 
         addSlotToContainer(new SlotCraftResult(this, invPlayer.player, craftMatrix, craftResult, 0, 226, 97)); // craftResult
         // [99]
@@ -207,8 +205,7 @@ public class ContainerBackpack extends ContainerAdventure {
         } else {
             craftResult.setInventorySlotContents(
                     0,
-                    CraftingManager.getInstance().findMatchingRecipe(craftMatrix, player.worldObj)
-            );
+                    CraftingManager.getInstance().findMatchingRecipe(craftMatrix, player.worldObj));
         }
     }
 
