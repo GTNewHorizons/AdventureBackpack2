@@ -1,8 +1,12 @@
 package com.darkona.adventurebackpack.util;
 
-import com.darkona.adventurebackpack.reference.LoadedMods;
-import com.mojang.authlib.GameProfile;
-import cpw.mods.fml.common.FMLCommonHandler;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
@@ -11,11 +15,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 
-import javax.annotation.Nullable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.UUID;
+import com.darkona.adventurebackpack.reference.LoadedMods;
+import com.mojang.authlib.GameProfile;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public final class TinkerCraftingStationBridge {
 
@@ -38,7 +41,8 @@ public final class TinkerCraftingStationBridge {
                 final Class<?> craftingStation = Class.forName(CLASS_CRAFTING_STATION);
 
                 craftingLogicConstructor = craftingLogic.getConstructor();
-                craftingStationConstructor = craftingStation.getConstructor(InventoryPlayer.class, craftingLogic, int.class, int.class, int.class);
+                craftingStationConstructor = craftingStation
+                        .getConstructor(InventoryPlayer.class, craftingLogic, int.class, int.class, int.class);
 
                 craftMatrixField = craftingStation.getField(FIELD_CRAFT_MATRIX);
                 craftResultField = craftingStation.getField(FIELD_CRAFT_RESULT);

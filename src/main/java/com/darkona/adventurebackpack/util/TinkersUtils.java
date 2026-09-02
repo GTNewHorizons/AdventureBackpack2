@@ -1,11 +1,12 @@
 package com.darkona.adventurebackpack.util;
 
-import com.darkona.adventurebackpack.reference.LoadedMods;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.darkona.adventurebackpack.reference.LoadedMods;
 
 public final class TinkersUtils {
 
@@ -22,7 +23,7 @@ public final class TinkersUtils {
         if (stack == null || stack.getItem() == null) return false;
         final String cn = stack.getItem().getClass().getName();
         return cn.startsWith(PACKAGE_TCONSTRUCT)
-               && (cn.startsWith(PACKAGE_TOOLS) || cn.startsWith(PACKAGE_WEAPONS) || cn.startsWith(PACKAGE_AMMO));
+                && (cn.startsWith(PACKAGE_TOOLS) || cn.startsWith(PACKAGE_WEAPONS) || cn.startsWith(PACKAGE_AMMO));
     }
 
     public static boolean isTool(@Nonnull ItemStack stack) {
