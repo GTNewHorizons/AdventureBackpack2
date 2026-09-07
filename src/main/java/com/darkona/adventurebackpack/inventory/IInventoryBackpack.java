@@ -29,4 +29,6 @@ public interface IInventoryBackpack extends IInventoryTanks {
     void consumeInventoryItem(Item item);
 
     boolean isSleepingBagDeployed();
+
+    boolean isHidden();
 }

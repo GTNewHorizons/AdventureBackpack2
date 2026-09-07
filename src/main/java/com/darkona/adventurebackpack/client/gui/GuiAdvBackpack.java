@@ -1,5 +1,6 @@
 package com.darkona.adventurebackpack.client.gui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiScreen;
@@ -20,6 +21,7 @@ import com.darkona.adventurebackpack.init.ModNetwork;
 import com.darkona.adventurebackpack.inventory.ContainerBackpack;
 import com.darkona.adventurebackpack.inventory.IInventoryBackpack;
 import com.darkona.adventurebackpack.inventory.InventoryBackpack;
+import com.darkona.adventurebackpack.network.HiddenPacket;
 import com.darkona.adventurebackpack.network.PlayerActionPacket;
 import com.darkona.adventurebackpack.network.SleepingBagPacket;
 import com.darkona.adventurebackpack.reference.LoadedMods;
@@ -38,9 +40,11 @@ public class GuiAdvBackpack extends GuiWithTanks {
     private static final ResourceLocation TEXTURE = Resources.guiTextures("guiBackpackNew");
     private static final int TINKERS_SLOT = 38; // ContainerBackpack.CRAFT_MATRIX_EMULATION[4]
 
-    private static final GuiImageButtonNormal bedButton = new GuiImageButtonNormal(5, 91, 18, 18);
-    private static final GuiImageButtonNormal equipButton = new GuiImageButtonNormal(5, 91, 18, 18);
-    private static final GuiImageButtonNormal unequipButton = new GuiImageButtonNormal(5, 91, 18, 18);
+    private static final GuiImageButtonNormal bedButton = new GuiImageButtonNormal(5, 90, 18, 18);
+    private static final GuiImageButtonNormal equipButton = new GuiImageButtonNormal(5, 90, 18, 18);
+    private static final GuiImageButtonNormal unequipButton = new GuiImageButtonNormal(5, 90, 18, 18);
+    private static final GuiImageButtonNormal hideButton = new GuiImageButtonNormal(5, 71, 18, 18);
+    private static final GuiImageButtonNormal unhideButton = new GuiImageButtonNormal(5, 71, 18, 18);
     private static final GuiTank tankLeft = new GuiTank(25, 7, 100, 16, ConfigHandler.typeTankRender);
     private static final GuiTank tankRight = new GuiTank(207, 7, 100, 16, ConfigHandler.typeTankRender);
 
@@ -89,6 +93,18 @@ public class GuiAdvBackpack extends GuiWithTanks {
             else equipButton.draw(this, 77, 208);
         }
 
+        // If hide ability is enabled,
+        // If already hidden, show unhide button, else show hide button
+        if (ConfigHandler.enableHideBackpack && source == Source.WEARING) {
+            if (inventory.isHidden()) {
+                if (unhideButton.inButton(this, mouseX, mouseY)) unhideButton.draw(this, 134, 208);
+                else unhideButton.draw(this, 115, 208);
+            } else {
+                if (hideButton.inButton(this, mouseX, mouseY)) hideButton.draw(this, 134, 227);
+                else hideButton.draw(this, 115, 227);
+            }
+        }
+
         if (LoadedMods.TCONSTRUCT && ConfigHandler.tinkerToolsMaintenance) {
             if (inventory.getStackInSlot(TINKERS_SLOT) == null) {
                 this.mc.getTextureManager().bindTexture(TinkersUtils.GUI_ICONS);
@@ -133,6 +149,14 @@ public class GuiAdvBackpack extends GuiWithTanks {
                 int posZ = MathHelper.floor_double(player.posZ);
                 ModNetwork.net.sendToServer(new SleepingBagPacket.SleepingBagMessage(false, posX, posY, posZ));
             }
+        } else if (ConfigHandler.enableHideBackpack && hideButton.inButton(this, mouseX, mouseY)) {
+            if (source != Source.WEARING) return;
+            ModNetwork.net.sendToServer(new HiddenPacket.HiddenPacketMessage(this.inventory.isHidden()));
+            if (inventory.isHidden()) {
+                ((InventoryBackpack) inventory).setUnhidden();
+            } else {
+                ((InventoryBackpack) inventory).setHidden();
+            }
         } else {
             super.mouseClicked(mouseX, mouseY, button);
         }
@@ -156,6 +180,16 @@ public class GuiAdvBackpack extends GuiWithTanks {
                 inventory.getExtendedProperties().removeTag(Constants.TAG_HOLDING_SPACE);
             }
         }
+    }
+
+    public List<String> getHiddenTooltip() {
+        ArrayList<String> tooltips = new ArrayList<>();
+        if (inventory.isHidden()) {
+            tooltips.add("Show backpack");
+        } else {
+            tooltips.add("Hide backpack");
+        }
+        return tooltips;
     }
 
     /**
@@ -183,6 +217,14 @@ public class GuiAdvBackpack extends GuiWithTanks {
                                 currenttip.add(TipUtils.l10n("backpack.unequip.key1"));
                                 currenttip.add(TipUtils.l10n("backpack.unequip.key2"));
                             }
+                }
+
+                // Hidden tooltip
+                if (ConfigHandler.enableHideBackpack && GuiContainerManager.shouldShowTooltip(gui)
+                        && currenttip.isEmpty()) {
+                    if (hideButton.inButton(backpackGui, mouseX, mouseY)) {
+                        currenttip.addAll(((GuiAdvBackpack) gui).getHiddenTooltip());
+                    }
                 }
             }
 

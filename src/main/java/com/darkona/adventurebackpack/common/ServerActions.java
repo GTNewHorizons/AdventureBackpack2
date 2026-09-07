@@ -375,4 +375,23 @@ public class ServerActions {
             }
         }
     }
+
+    public static void toggleHiddenBackpack(EntityPlayer player, boolean currentlyHidden) {
+        // Ignore if the player isn't wearing a backpack
+        if (!Wearing.isWearingBackpack(player)) return;
+
+        // Get the backpack inventory
+        InventoryBackpack inv = Wearing.getWearingBackpackInv(player);
+
+        // If it is already hidden, unhide
+        if (currentlyHidden) {
+            inv.setUnhidden();
+        } else {
+            inv.setHidden();
+        }
+
+        BackpackProperty.sync(player);
+
+        inv.markDirty();
+    }
 }

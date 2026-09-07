@@ -7,6 +7,7 @@ import com.darkona.adventurebackpack.network.CowAbilityPacket;
 import com.darkona.adventurebackpack.network.CycleToolPacket;
 import com.darkona.adventurebackpack.network.EquipUnequipBackWearablePacket;
 import com.darkona.adventurebackpack.network.GUIPacket;
+import com.darkona.adventurebackpack.network.HiddenPacket;
 import com.darkona.adventurebackpack.network.PlayerActionPacket;
 import com.darkona.adventurebackpack.network.SleepingBagPacket;
 import com.darkona.adventurebackpack.network.SyncPropertiesPacket;
@@ -40,6 +41,7 @@ public class ModNetwork {
         registerMessage(CowAbilityPacket.class, CowAbilityPacket.CowAbilityMessage.class);
         registerMessage(PlayerActionPacket.class, PlayerActionPacket.ActionMessage.class);
         registerMessage(EquipUnequipBackWearablePacket.class, EquipUnequipBackWearablePacket.Message.class);
+        registerMessage(HiddenPacket.class, HiddenPacket.HiddenPacketMessage.class);
     }
 
     @SuppressWarnings("unchecked")

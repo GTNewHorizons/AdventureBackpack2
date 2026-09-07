@@ -46,6 +46,7 @@ public class Constants {
     public static final String TAG_DISABLE_CYCLING = "disableCycling";
     public static final String TAG_DISABLE_NVISION = "disableNVision";
     public static final String TAG_LAST_TIME = "lastTime";
+    public static final String TAG_HIDDEN_BACKPACK = "hiddenBackpack";
 
     // NBT: Extended Properties
     public static final String TAG_HOLDING_SPACE = "holdingSpace";

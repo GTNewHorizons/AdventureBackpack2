@@ -31,6 +31,7 @@ public class ConfigHandler {
     public static boolean enableToolsRender = true;
     public static int typeTankRender = 2;
     public static boolean showGuiTooltips = true;
+    public static boolean enableHideBackpack = false;
 
     public static boolean statusOverlay = true;
     public static boolean statusOverlayLeft = true;
@@ -168,6 +169,11 @@ public class ConfigHandler {
                 true,
                 "Enable rendering for tools in the backpack tool slots");
         showGuiTooltips = config.getBoolean("Hovering Text", "graphics", true, "Show tooltips in GUIs?");
+        enableHideBackpack = config.getBoolean(
+                "Enable Hide Backpack",
+                "graphics",
+                false,
+                "Enable the ability to hide/show the backpack in the GUI");
 
         // Graphics.Status
         statusOverlay = config

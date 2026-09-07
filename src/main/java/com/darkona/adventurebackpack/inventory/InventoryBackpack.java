@@ -1,5 +1,6 @@
 package com.darkona.adventurebackpack.inventory;
 
+import static com.darkona.adventurebackpack.common.Constants.*;
 import static com.darkona.adventurebackpack.common.Constants.BUCKET_IN_LEFT;
 import static com.darkona.adventurebackpack.common.Constants.BUCKET_IN_RIGHT;
 import static com.darkona.adventurebackpack.common.Constants.BUCKET_OUT_LEFT;
@@ -48,6 +49,8 @@ public class InventoryBackpack extends InventoryAdventure implements IInventoryB
     private boolean disableNVision = false;
     private boolean disableCycling = false;
     private int lastTime = 0;
+
+    private boolean isHidden = false;
 
     public InventoryBackpack(ItemStack backpack) {
         super(backpack, Constants.INVENTORY_SIZE);
@@ -105,6 +108,7 @@ public class InventoryBackpack extends InventoryAdventure implements IInventoryB
         disableCycling = backpackTag.getBoolean(TAG_DISABLE_CYCLING);
         disableNVision = backpackTag.getBoolean(TAG_DISABLE_NVISION);
         lastTime = backpackTag.getInteger(TAG_LAST_TIME);
+        isHidden = backpackTag.getBoolean(TAG_HIDDEN_BACKPACK);
     }
 
     @Override
@@ -119,6 +123,7 @@ public class InventoryBackpack extends InventoryAdventure implements IInventoryB
         backpackTag.setBoolean(TAG_DISABLE_CYCLING, disableCycling);
         backpackTag.setBoolean(TAG_DISABLE_NVISION, disableNVision);
         backpackTag.setInteger(TAG_LAST_TIME, lastTime);
+        backpackTag.setBoolean(TAG_HIDDEN_BACKPACK, isHidden);
 
         compound.setTag(TAG_WEARABLE_COMPOUND, backpackTag);
     }
@@ -256,5 +261,20 @@ public class InventoryBackpack extends InventoryAdventure implements IInventoryB
 
         compound.setTag(TAG_WEARABLE_COMPOUND, newBackpackTag);
         compound.removeTag("backpackData");
+    }
+
+    @Override
+    public boolean isHidden() {
+        return this.isHidden;
+    }
+
+    public void setHidden() {
+        this.isHidden = true;
+        markDirty();
+    }
+
+    public void setUnhidden() {
+        this.isHidden = false;
+        markDirty();
     }
 }
