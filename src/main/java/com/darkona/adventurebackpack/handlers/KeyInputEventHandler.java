@@ -3,6 +3,7 @@ package com.darkona.adventurebackpack.handlers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 
+import com.darkona.adventurebackpack.common.ClientActions;
 import com.darkona.adventurebackpack.common.ServerActions;
 import com.darkona.adventurebackpack.config.Keybindings;
 import com.darkona.adventurebackpack.entity.EntityFriendlySpider;
@@ -81,13 +82,13 @@ public class KeyInputEventHandler {
             } else if (Wearing.isWearingCopter(player)) {
                 if (player.isSneaking()) {
                     sendWearableModePacket(WearableModePacket.COPTER_ON_OFF);
-                    ServerActions.toggleCopterPack(
+                    ClientActions.toggleCopterPack(
                             player,
                             Wearing.getWearingCopter(player),
                             WearableModePacket.COPTER_ON_OFF);
                 } else {
                     sendWearableModePacket(WearableModePacket.COPTER_TOGGLE);
-                    ServerActions.toggleCopterPack(
+                    ClientActions.toggleCopterPack(
                             player,
                             Wearing.getWearingCopter(player),
                             WearableModePacket.COPTER_TOGGLE);
