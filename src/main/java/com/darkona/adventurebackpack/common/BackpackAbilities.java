@@ -176,7 +176,8 @@ public class BackpackAbilities {
                 potion = player.getActivePotionEffect(Potion.regeneration);
             }
             if (player.getHealth() < player.getMaxHealth()) {
-                if (potion == null || potion.getDuration() < 20) {
+                if (potion == null || potion.getAmplifier() < ConfigHandler.dragonBackpackRegen - 1
+                        || potion.getDuration() < 20) {
                     player.addPotionEffect(
                             new PotionEffect(
                                     Potion.regeneration.getId(),
@@ -194,10 +195,12 @@ public class BackpackAbilities {
         }
 
         if (ConfigHandler.dragonBackpackDamage != 0) {
+            potion = null;
             if (player.isPotionActive(Potion.damageBoost.id)) {
                 potion = player.getActivePotionEffect(Potion.damageBoost);
             }
-            if (potion == null || potion.getDuration() < 222) {
+            if (potion == null || potion.getAmplifier() < ConfigHandler.dragonBackpackDamage - 1
+                    || potion.getDuration() < 222) {
                 player.addPotionEffect(
                         new PotionEffect(
                                 Potion.damageBoost.getId(),
