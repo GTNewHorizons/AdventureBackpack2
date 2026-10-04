@@ -1,6 +1,7 @@
 package com.darkona.adventurebackpack.common;
 
 import static com.darkona.adventurebackpack.common.Constants.BUCKET;
+import static com.darkona.adventurebackpack.common.Constants.Copter.TAG_FUEL_TANK;
 import static com.darkona.adventurebackpack.common.Constants.Copter.TAG_STATUS;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_LOWER;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_UPPER;
@@ -270,46 +271,49 @@ public class ServerActions {
     }
 
     public static void toggleCopterPack(EntityPlayer player, ItemStack copter, byte type) {
-        String message = "";
         boolean actionPerformed = false;
-        byte mode = BackpackUtils.getOrCreateWearableCompound(copter).getByte(TAG_STATUS);
+        NBTTagCompound copterCompound = BackpackUtils.getOrCreateWearableCompound(copter);
+        NBTTagCompound fuelTank = copterCompound.getCompoundTag(TAG_FUEL_TANK);
+        if (fuelTank.hasKey("Empty") || FluidStack.loadFluidStackFromNBT(fuelTank).amount <= 0) {
+            return;
+        }
+        byte mode = copterCompound.getByte(TAG_STATUS);
         byte newMode = ItemCopterPack.OFF_MODE;
 
         if (type == WearableModePacket.COPTER_ON_OFF) {
             if (mode == ItemCopterPack.OFF_MODE) {
                 newMode = ItemCopterPack.NORMAL_MODE;
-                message = "adventurebackpack:messages.copterpack.normal";
                 actionPerformed = true;
-                if (!player.worldObj.isRemote) {
-                    ModNetwork.sendToNearby(
-                            new EntitySoundPacket.Message(EntitySoundPacket.COPTER_SOUND, player),
-                            player);
+                ModNetwork.sendToNearby(new EntitySoundPacket.Message(EntitySoundPacket.COPTER_SOUND, player), player);
+                if (!player.capabilities.allowFlying) {
+                    player.capabilities.allowFlying = true;
+                    player.sendPlayerAbilities();
                 }
+
             } else {
                 newMode = ItemCopterPack.OFF_MODE;
-                message = "adventurebackpack:messages.copterpack.off";
                 actionPerformed = true;
+                if (player.capabilities.allowFlying) {
+                    player.capabilities.allowFlying = false;
+                    player.sendPlayerAbilities();
+                }
             }
         }
 
         if (type == WearableModePacket.COPTER_TOGGLE && mode != ItemCopterPack.OFF_MODE) {
             if (mode == ItemCopterPack.NORMAL_MODE) {
                 newMode = ItemCopterPack.HOVER_MODE;
-                message = "adventurebackpack:messages.copterpack.hover";
                 actionPerformed = true;
             }
             if (mode == ItemCopterPack.HOVER_MODE) {
                 newMode = ItemCopterPack.NORMAL_MODE;
-                message = "adventurebackpack:messages.copterpack.normal";
                 actionPerformed = true;
             }
         }
 
         if (actionPerformed) {
             BackpackUtils.getOrCreateWearableCompound(copter).setByte(TAG_STATUS, newMode);
-            if (player.worldObj.isRemote && ConfigHandler.chatSpam) {
-                player.addChatComponentMessage(new ChatComponentTranslation(message));
-            }
+            BackpackProperty.sync(player);
         }
     }
 

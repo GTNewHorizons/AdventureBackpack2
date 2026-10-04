@@ -27,7 +27,7 @@ public abstract class ContainerAdventure extends Container {
 
     private final int[] fluidsAmount;
     private int itemsCount;
-    private boolean requestedUpdate;
+    protected boolean requestedUpdate;
     public boolean skipFluidSlots;
 
     protected ContainerAdventure(EntityPlayer player, IInventoryTanks inventory, Source source) {
@@ -91,7 +91,7 @@ public abstract class ContainerAdventure extends Container {
         return false;
     }
 
-    private boolean detectFluidChanges() {
+    protected boolean detectFluidChanges() {
         boolean changesDetected = false;
         for (int i = 0; i < fluidsAmount.length; i++) {
             int amount = inventory.getTanksArray()[i].getFluidAmount();
