@@ -20,6 +20,7 @@ import net.minecraftforge.fluids.FluidTank;
 import com.darkona.adventurebackpack.common.Constants;
 import com.darkona.adventurebackpack.common.Constants.Source;
 import com.darkona.adventurebackpack.config.ConfigHandler;
+import com.darkona.adventurebackpack.util.TinkerCraftingStationBridge;
 import com.darkona.adventurebackpack.util.TinkersUtils;
 
 public class ContainerBackpack extends ContainerAdventure {
@@ -41,6 +42,7 @@ public class ContainerBackpack extends ContainerAdventure {
             MATRIX_DIMENSION,
             MATRIX_DIMENSION);
     private final IInventory craftResult = new InventoryCraftResult();
+    private final TinkerCraftingStationBridge tinkerCraftingStationBridge = new TinkerCraftingStationBridge();
 
     public ContainerBackpack(EntityPlayer player, IInventoryBackpack backpack, Source source) {
         super(player, backpack, source);
@@ -84,7 +86,7 @@ public class ContainerBackpack extends ContainerAdventure {
                             (startY + 18 * row)));
 
         addSlotToContainer(new SlotCraftResult(this, invPlayer.player, craftMatrix, craftResult, 0, 226, 97)); // craftResult
-                                                                                                               // [99]
+        // [99]
         syncCraftMatrixWithInventory(true);
     }
 
@@ -198,11 +200,13 @@ public class ContainerBackpack extends ContainerAdventure {
 
     @Override
     public void onCraftMatrixChanged(IInventory inventory) {
-        if (ConfigHandler.tinkerToolsMaintenance && TinkersUtils.isToolOrWeapon(craftMatrix.getStackInSlot(4)))
-            craftResult.setInventorySlotContents(0, TinkersUtils.getTinkersRecipe(craftMatrix));
-        else craftResult.setInventorySlotContents(
-                0,
-                CraftingManager.getInstance().findMatchingRecipe(craftMatrix, player.worldObj));
+        if (ConfigHandler.tinkerToolsMaintenance && TinkersUtils.isToolOrWeapon(craftMatrix.getStackInSlot(4))) {
+            craftResult.setInventorySlotContents(0, this.tinkerCraftingStationBridge.getTinkersRecipe(craftMatrix));
+        } else {
+            craftResult.setInventorySlotContents(
+                    0,
+                    CraftingManager.getInstance().findMatchingRecipe(craftMatrix, player.worldObj));
+        }
     }
 
     protected void syncCraftMatrixWithInventory(boolean preCraft) {
