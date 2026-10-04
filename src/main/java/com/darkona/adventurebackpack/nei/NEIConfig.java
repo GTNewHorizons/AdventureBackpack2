@@ -10,7 +10,7 @@ public class NEIConfig implements IConfigureNEI {
 
     @Override
     public void loadConfig() {
-        API.registerGuiOverlay(GuiAdvBackpack.class, "crafting", new BackpackStackPositioner());
+        API.registerGuiOverlay(GuiAdvBackpack.class, "crafting", 127, 55);
         API.registerGuiOverlayHandler(GuiAdvBackpack.class, new BackpackOverlayHandler(), "crafting");
     }
 
