@@ -50,7 +50,10 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  */
 public class PlayerEventHandler {
 
+    // Separate per side: in singleplayer the client and the integrated server share these statics, and a removal
+    // done by the server first (e.g. a BiblioCraft armor stand) must not skip the reset on the client player
     public static HashSet<String> stepBoostedPlayers = new HashSet<>();
+    public static HashSet<String> stepBoostedPlayersClient = new HashSet<>();
 
     @SubscribeEvent
     public void registerBackpackProperty(EntityEvent.EntityConstructing event) {
@@ -318,15 +321,16 @@ public class PlayerEventHandler {
         }
         if (player != null && !player.isDead && player instanceof EntityPlayer) {
             String playerName = player.getGameProfile().getName();
-            boolean stepBoosted = stepBoostedPlayers.contains(playerName);
-            if (Wearing.isWearingBoots(player)) {
+            HashSet<String> boosted = player.worldObj.isRemote ? stepBoostedPlayersClient : stepBoostedPlayers;
+            boolean stepBoosted = boosted.contains(playerName);
+            if (ConfigHandler.pistonBootsAutoStep && Wearing.isWearingBoots(player)) {
                 player.stepHeight = 1.001F;
-                if (ConfigHandler.pistonBootsAutoStep && !stepBoosted) {
-                    stepBoostedPlayers.add(playerName);
+                if (!stepBoosted) {
+                    boosted.add(playerName);
                 }
             } else if (stepBoosted) {
                 player.stepHeight = 0.501F;
-                stepBoostedPlayers.remove(playerName);
+                boosted.remove(playerName);
             }
         }
     }
