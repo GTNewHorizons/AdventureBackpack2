@@ -7,6 +7,9 @@ import static com.darkona.adventurebackpack.common.Constants.BUCKET_OUT_RIGHT;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_LOWER;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_UPPER;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -233,6 +236,19 @@ public class ContainerBackpack extends ContainerAdventure {
             if (preCraft) onCraftMatrixChanged(craftMatrix);
             else inventory.markDirty();
         }
+    }
+
+    /**
+     *
+     * @return Crafting matrix emulation indices as a Set
+     */
+    public static Set<Integer> findCraftMatrixEmulationIDsAsSet() {
+        final int[] emulatedCraftingMatrixInsideBackpack = ContainerBackpack.findCraftMatrixEmulationIDs();
+        final Set<Integer> emulatedCraftingMatrixIndicesAsSet = new HashSet<>();
+        for (int i : emulatedCraftingMatrixInsideBackpack) {
+            emulatedCraftingMatrixIndicesAsSet.add(i);
+        }
+        return emulatedCraftingMatrixIndicesAsSet;
     }
 
     /**
