@@ -20,6 +20,7 @@ import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraftforge.fluids.FluidTank;
 
 import com.darkona.adventurebackpack.common.Constants;
@@ -105,21 +106,22 @@ public class ContainerBackpack extends ContainerAdventure {
     @Override
     public void detectAndSendChanges() {
         syncCraftMatrixWithInventory(true);
-        syncCraftResultToServer();
+        syncCraftResultToClient();
         super.detectAndSendChanges();
     }
 
     @SuppressWarnings("unchecked")
-    private void syncCraftResultToServer() {
+    private void syncCraftResultToClient() {
         ItemStack stackA = ((Slot) inventorySlots.get(CRAFT_RESULT)).getStack();
         ItemStack stackB = (ItemStack) inventoryItemStacks.get(CRAFT_RESULT);
 
         if (!ItemStack.areItemStacksEqual(stackB, stackA)) {
             stackB = stackA == null ? null : stackA.copy();
             inventoryItemStacks.set(CRAFT_RESULT, stackB);
-
-            if (player instanceof EntityPlayerMP)
-                ((EntityPlayerMP) player).sendContainerAndContentsToPlayer(this, this.getInventory());
+            if (player instanceof EntityPlayerMP) {
+                S2FPacketSetSlot packet = new S2FPacketSetSlot(this.windowId, CRAFT_RESULT, stackB);
+                ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(packet);
+            }
         }
     }
 
