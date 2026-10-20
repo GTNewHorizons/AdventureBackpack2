@@ -7,6 +7,7 @@ import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 
 public class NEIConfig implements IConfigureNEI {
+
     /**
      * Starting X coordinates for crafting grid in backpack
      */
@@ -16,8 +17,6 @@ public class NEIConfig implements IConfigureNEI {
      * Starting Y coordinates for crafting grid in backpack
      */
     final static private int Y_START = 55;
-
-
 
     @Override
     public void loadConfig() {

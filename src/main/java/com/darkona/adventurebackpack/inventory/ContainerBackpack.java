@@ -350,7 +350,7 @@ public class ContainerBackpack extends ContainerAdventure {
      */
     private int getAmountMovedBetweenSlots(Slot slot, ItemStack stackToMove) {
         final int addedStackSize = stackToMove.stackSize;
-        final int maxStackSize = maxStackSize(slot);
+        final int maxStackSize = maxStackSize(slot, stackToMove);
 
         if (!slot.getHasStack()) return Math.min(addedStackSize, maxStackSize);
 
@@ -365,15 +365,14 @@ public class ContainerBackpack extends ContainerAdventure {
      * Effective stack limit of the slot. For an empty slot it is the slot limit; otherwise it is the lower of the slot
      * limit and the held item's max stack size.
      *
-     * @param slot the slot to check
+     * @param slot  the slot to check
+     * @param stack the stack to get it's max size
      * @return the most items the slot can hold
      */
-    private int maxStackSize(Slot slot) {
+    private int maxStackSize(Slot slot, ItemStack stack) {
         final int maxSlotStackSize = slot.getSlotStackLimit();
-        if (!slot.getHasStack()) return maxSlotStackSize;
 
-        final ItemStack slotStack = slot.getStack();
-        final int maxStackSizeSlot = slotStack.getMaxStackSize();
+        final int maxStackSizeSlot = stack.getMaxStackSize();
         return Math.min(maxStackSizeSlot, maxSlotStackSize);
     }
 
