@@ -40,12 +40,20 @@ public class ContainerBackpack extends ContainerAdventure {
     private static final int CRAFT_RESULT = BUCKET_RIGHT + 2 + (MATRIX_DIMENSION * MATRIX_DIMENSION);
     private static final int[] CRAFT_MATRIX_EMULATION = findCraftMatrixEmulationIDs();
 
+    /**
+     * Container indices of the backpack storage slots, excluding the 3x3 block
+     * that mirrors the hidden crafting matrix. Items merged into those slots
+     * would land in the crafting grid. Computed once; do not modify.
+     */
+    private static final int[] BACKPACK_INV_IDS = backpackInvIDs();
+
     protected final InventoryCraftingBackpack craftMatrix = new InventoryCraftingBackpack(
             this,
             MATRIX_DIMENSION,
             MATRIX_DIMENSION);
     private final IInventory craftResult = new InventoryCraftResult();
     private final TinkerCraftingStationBridge tinkerCraftingStationBridge = new TinkerCraftingStationBridge();
+
 
     public ContainerBackpack(EntityPlayer player, IInventoryBackpack backpack, Source source) {
         super(player, backpack, source);
@@ -131,7 +139,7 @@ public class ContainerBackpack extends ContainerAdventure {
     }
 
     private boolean mergeBackpackInv(ItemStack stack) {
-        return mergeItemStack(stack, BACK_INV_START, BACK_INV_END + 1, false);
+        return mergeItemStackBackpackInv(stack);
     }
 
     private boolean mergeLeftBucket(ItemStack stack) {
@@ -144,6 +152,156 @@ public class ContainerBackpack extends ContainerAdventure {
 
     private boolean isHoldingSpace() {
         return getInventoryBackpack().getExtendedProperties().hasKey(Constants.TAG_HOLDING_SPACE);
+    }
+
+    /**
+     * Shift-click target for backpack storage. Tops up matching stacks first,
+     * then puts any remainder into the first empty slot. Skips the emulated
+     * crafting slots.
+     *
+     * @param stack the source slot's stack; its size is reduced by what was moved
+     * @return true if any items moved
+     */
+    private boolean mergeItemStackBackpackInv(ItemStack stack) {
+        boolean changesMade = false;
+
+        if (stack.isStackable()) {
+            changesMade = findSlotToMergeStackTo(stack);
+
+            int stackSize = stack.stackSize;
+            if (stackSize == 0) return changesMade;
+        }
+
+        changesMade = changesMade | findSlotToMoveStackTo(stack); // no short circuit
+        return changesMade;
+    }
+
+    /**
+     * Puts as much of {@code stack} as fits into the first empty storage slot.
+     * Uses one slot only, so any remainder stays in {@code stack}.
+     *
+     * @param stack the stack to place; its size is reduced by what was moved
+     * @return true if a slot was filled
+     */
+    private boolean findSlotToMoveStackTo(ItemStack stack) {
+        boolean changesMade = false;
+        for (int i : BACKPACK_INV_IDS) {
+            final Slot currentItemSlot = (Slot) this.inventorySlots.get(i);
+            if (currentItemSlot.getHasStack()) continue;
+            moveStackToSlot(currentItemSlot, stack);
+            changesMade = true;
+            break;
+        }
+        return changesMade;
+    }
+
+    /**
+     * Tops up every existing storage stack that matches {@code stack}
+     * (same item, damage and NBT) until {@code stack} is empty or no matches are left.
+     *
+     * @param stack the stack to merge; its size is reduced by what was moved
+     * @return true if any items moved
+     */
+    private boolean findSlotToMergeStackTo(ItemStack stack) {
+        boolean changesMade = false;
+        for (int i : BACKPACK_INV_IDS) {
+            final Slot currentItemSlot = (Slot) this.inventorySlots.get(i);
+            if (!currentItemSlot.getHasStack()) continue;
+
+            final ItemStack currentStack = currentItemSlot.getStack();
+            boolean areItemsEqual = areItemsEqual(stack, currentStack);
+            if (!areItemsEqual) continue;
+
+            changesMade = changesMade | tryMergeItemsInSlot(currentItemSlot, stack);
+        }
+        return changesMade;
+    }
+
+    /**
+     * Puts a copy of {@code stack}, capped at the slot's limit, into an empty slot
+     * and subtracts the moved amount from {@code stack}. A copy is used because
+     * {@code stack} is still owned by the source slot.
+     *
+     * @param slot  an empty destination slot
+     * @param stack the stack to move from; its size is reduced by what was moved
+     */
+    private void moveStackToSlot(Slot slot, ItemStack stack) {
+        final ItemStack stackCopy = stack.copy();
+        final int amountMoved = getAmountMovedBetweenSlots(slot, stack);
+
+        stack.stackSize -= amountMoved;
+        stackCopy.stackSize = amountMoved;
+        slot.putStack(stackCopy);
+
+    }
+
+    /**
+     * Moves as many items as fit from {@code stackToMove} into the slot's existing stack.
+     *
+     * @param slot        a slot holding a stack that matches {@code stackToMove}
+     * @param stackToMove the stack to move from; its size is reduced by what was moved
+     * @return false if the slot was already full
+     */
+    private boolean tryMergeItemsInSlot(Slot slot, ItemStack stackToMove) {
+        final ItemStack slotStack = slot.getStack();
+        final int amountMoved = getAmountMovedBetweenSlots(slot, stackToMove);
+
+        if (amountMoved == 0) return false;
+
+        slotStack.stackSize += amountMoved;
+        stackToMove.stackSize -= amountMoved;
+        slot.onSlotChanged();
+        return true;
+    }
+
+    /**
+     * Same item, damage and NBT. Stack size is ignored.
+     *
+     * @param stack1 first stack, non-null
+     * @param stack2 second stack, non-null
+     * @return true if the two stacks can be merged
+     */
+    private boolean areItemsEqual(ItemStack stack1, ItemStack stack2) {
+        final boolean sameItem = stack1.isItemEqual(stack2);
+        final boolean sameStackTags = ItemStack.areItemStackTagsEqual(stack1, stack2);
+        return sameItem && sameStackTags;
+    }
+
+    /**
+     * How many items from {@code stackToMove} fit in the slot, given its current
+     * contents and stack limit.
+     *
+     * @param slot        the destination slot, empty or holding a matching stack
+     * @param stackToMove the stack being moved
+     * @return the number of items that fit, possibly 0
+     */
+    private int getAmountMovedBetweenSlots(Slot slot, ItemStack stackToMove) {
+        final int addedStackSize = stackToMove.stackSize;
+        final int maxStackSize = maxStackSize(slot);
+
+        if (!slot.getHasStack()) return Math.min(addedStackSize, maxStackSize);
+
+        final ItemStack slotStack = slot.getStack();
+        final int slotStackSize = slotStack.stackSize;
+
+        final int availableSize = maxStackSize - slotStackSize;
+        return Math.min(addedStackSize, availableSize);
+    }
+
+    /**
+     * Effective stack limit of the slot. For an empty slot it is the slot limit;
+     * otherwise it is the lower of the slot limit and the held item's max stack size.
+     *
+     * @param slot the slot to check
+     * @return the most items the slot can hold
+     */
+    private int maxStackSize(Slot slot) {
+        final int maxSlotStackSize = slot.getSlotStackLimit();
+        if (!slot.getHasStack()) return maxSlotStackSize;
+
+        final ItemStack slotStack =  slot.getStack();
+        final int maxStackSizeSlot = slotStack.getMaxStackSize();
+        return Math.min(maxStackSizeSlot, maxSlotStackSize);
     }
 
     private boolean transferFluidContainer(ItemStack container) {
@@ -265,5 +423,27 @@ public class ContainerBackpack extends ContainerAdventure {
             }
         }
         return slotsArray;
+    }
+
+    private static int[] backpackInvIDs() {
+        final int totalCraftingAreaSize = MATRIX_DIMENSION * MATRIX_DIMENSION;
+        final int backpackInvSize = BACK_INV_ROWS * BACK_INV_COLUMNS - totalCraftingAreaSize;
+        final int[] backpackInvIDs = new int[backpackInvSize];
+
+        final Set<Integer> backpackCraftingEmIDs = findCraftMatrixEmulationIDsAsSet();
+        int numberOfCraftingSlotsPassed = 0;
+
+        for (int i = 0; i < BACK_INV_ROWS; i++) {
+            for (int j = 0; j < BACK_INV_COLUMNS; j++) {
+                final int slotIndex = i * BACK_INV_COLUMNS + j;
+                if (!backpackCraftingEmIDs.contains(slotIndex)) {
+                    final int indexToSet = slotIndex - numberOfCraftingSlotsPassed;
+                    backpackInvIDs[indexToSet] = slotIndex + BACK_INV_START;
+                    continue;
+                }
+                numberOfCraftingSlotsPassed++;
+            }
+        }
+        return backpackInvIDs;
     }
 }
