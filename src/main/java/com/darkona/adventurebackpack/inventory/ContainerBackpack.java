@@ -41,9 +41,8 @@ public class ContainerBackpack extends ContainerAdventure {
     private static final int[] CRAFT_MATRIX_EMULATION = findCraftMatrixEmulationIDs();
 
     /**
-     * Container indices of the backpack storage slots, excluding the 3x3 block
-     * that mirrors the hidden crafting matrix. Items merged into those slots
-     * would land in the crafting grid. Computed once; do not modify.
+     * Container indices of the backpack storage slots, excluding the 3x3 block that mirrors the hidden crafting matrix.
+     * Items merged into those slots would land in the crafting grid. Computed once; do not modify.
      */
     private static final int[] BACKPACK_INV_IDS = backpackInvIDs();
 
@@ -53,7 +52,6 @@ public class ContainerBackpack extends ContainerAdventure {
             MATRIX_DIMENSION);
     private final IInventory craftResult = new InventoryCraftResult();
     private final TinkerCraftingStationBridge tinkerCraftingStationBridge = new TinkerCraftingStationBridge();
-
 
     public ContainerBackpack(EntityPlayer player, IInventoryBackpack backpack, Source source) {
         super(player, backpack, source);
@@ -155,9 +153,8 @@ public class ContainerBackpack extends ContainerAdventure {
     }
 
     /**
-     * Shift-click target for backpack storage. Tops up matching stacks first,
-     * then puts any remainder into the first empty slot. Skips the emulated
-     * crafting slots.
+     * Shift-click target for backpack storage. Tops up matching stacks first, then puts any remainder into the first
+     * empty slot. Skips the emulated crafting slots.
      *
      * @param stack the source slot's stack; its size is reduced by what was moved
      * @return true if any items moved
@@ -177,8 +174,8 @@ public class ContainerBackpack extends ContainerAdventure {
     }
 
     /**
-     * Puts as much of {@code stack} as fits into the first empty storage slot.
-     * Uses one slot only, so any remainder stays in {@code stack}.
+     * Puts as much of {@code stack} as fits into the first empty storage slot. Uses one slot only, so any remainder
+     * stays in {@code stack}.
      *
      * @param stack the stack to place; its size is reduced by what was moved
      * @return true if a slot was filled
@@ -196,8 +193,8 @@ public class ContainerBackpack extends ContainerAdventure {
     }
 
     /**
-     * Tops up every existing storage stack that matches {@code stack}
-     * (same item, damage and NBT) until {@code stack} is empty or no matches are left.
+     * Tops up every existing storage stack that matches {@code stack} (same item, damage and NBT) until {@code stack}
+     * is empty or no matches are left.
      *
      * @param stack the stack to merge; its size is reduced by what was moved
      * @return true if any items moved
@@ -218,9 +215,8 @@ public class ContainerBackpack extends ContainerAdventure {
     }
 
     /**
-     * Puts a copy of {@code stack}, capped at the slot's limit, into an empty slot
-     * and subtracts the moved amount from {@code stack}. A copy is used because
-     * {@code stack} is still owned by the source slot.
+     * Puts a copy of {@code stack}, capped at the slot's limit, into an empty slot and subtracts the moved amount from
+     * {@code stack}. A copy is used because {@code stack} is still owned by the source slot.
      *
      * @param slot  an empty destination slot
      * @param stack the stack to move from; its size is reduced by what was moved
@@ -268,8 +264,7 @@ public class ContainerBackpack extends ContainerAdventure {
     }
 
     /**
-     * How many items from {@code stackToMove} fit in the slot, given its current
-     * contents and stack limit.
+     * How many items from {@code stackToMove} fit in the slot, given its current contents and stack limit.
      *
      * @param slot        the destination slot, empty or holding a matching stack
      * @param stackToMove the stack being moved
@@ -289,8 +284,8 @@ public class ContainerBackpack extends ContainerAdventure {
     }
 
     /**
-     * Effective stack limit of the slot. For an empty slot it is the slot limit;
-     * otherwise it is the lower of the slot limit and the held item's max stack size.
+     * Effective stack limit of the slot. For an empty slot it is the slot limit; otherwise it is the lower of the slot
+     * limit and the held item's max stack size.
      *
      * @param slot the slot to check
      * @return the most items the slot can hold
@@ -299,7 +294,7 @@ public class ContainerBackpack extends ContainerAdventure {
         final int maxSlotStackSize = slot.getSlotStackLimit();
         if (!slot.getHasStack()) return maxSlotStackSize;
 
-        final ItemStack slotStack =  slot.getStack();
+        final ItemStack slotStack = slot.getStack();
         final int maxStackSizeSlot = slotStack.getMaxStackSize();
         return Math.min(maxStackSizeSlot, maxSlotStackSize);
     }
