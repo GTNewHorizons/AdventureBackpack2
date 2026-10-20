@@ -15,8 +15,8 @@ import codechicken.nei.recipe.IRecipeHandler;
 
 public class BackpackOverlayHandler extends DefaultOverlayHandler {
 
-    public BackpackOverlayHandler() {
-        super(127, 55);
+    public BackpackOverlayHandler(int x, int y) {
+        super(x, y);
     }
 
     @Override
