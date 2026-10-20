@@ -10,6 +10,8 @@ import static com.darkona.adventurebackpack.common.Constants.TOOL_UPPER;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -39,6 +41,7 @@ public class ContainerBackpack extends ContainerAdventure {
     private static final int MATRIX_DIMENSION = 3;
     private static final int CRAFT_RESULT = BUCKET_RIGHT + 2 + (MATRIX_DIMENSION * MATRIX_DIMENSION);
     private static final int[] CRAFT_MATRIX_EMULATION = findCraftMatrixEmulationIDs();
+    private static final Set<Integer> CRAFT_MATRIX_EMULATION_SET = findCraftMatrixEmulationIDsAsSet();
 
     /**
      * Container indices of the backpack storage slots, excluding the 3x3 block that mirrors the hidden crafting matrix.
@@ -132,6 +135,81 @@ public class ContainerBackpack extends ContainerAdventure {
         return true;
     }
 
+    /**
+     * Shift-click handler. Routes the clicked stack to its target inventory, then updates the source slot and fires
+     * {@code onPickupFromSlot} (which performs the craft when the source is the craft result slot).
+     * <p>
+     * Returning a non-null stack makes vanilla repeat the transfer, which is how a single shift-click on the craft
+     * result crafts a full stack.
+     *
+     * @param player   the player shift-clicking
+     * @param fromSlot container index of the clicked slot
+     * @return a copy of the stack before the transfer, or null if nothing moved
+     */
+    @Nullable
+    @Override
+    public ItemStack transferStackInSlot(EntityPlayer player, int fromSlot) {
+        Slot slot = getSlot(fromSlot);
+        if (slot == null || slot.getStack() == null) return null;
+        final ItemStack stack = slot.getStack();
+
+        final ItemStack stackCopy = stack.copy();
+
+        final boolean didPushToInventory = tryPushToTargetInventory(fromSlot, stack);
+        if (!didPushToInventory) return null;
+        if (stack.stackSize == 0) {
+            slot.putStack(null);
+        } else {
+            slot.onSlotChanged();
+        }
+
+        if (stack.stackSize == stackCopy.stackSize) return null;
+
+        slot.onPickupFromSlot(player, stack);
+        return stackCopy;
+    }
+
+    /**
+     * Picks where a shift-clicked stack goes, based on its source slot:
+     * <ul>
+     * <li>player inventory → backpack (tools, tanks, storage)</li>
+     * <li>emulated crafting grid → backpack storage, overflow to player inventory</li>
+     * <li>anything else → player inventory</li>
+     * </ul>
+     *
+     * @param fromSlot container index of the source slot
+     * @param stack    the source slot's stack; its size is reduced by what was moved
+     * @return true if any items moved
+     */
+    private boolean tryPushToTargetInventory(int fromSlot, ItemStack stack) {
+        final int localFromSlot = fromSlot - BACK_INV_START;
+
+        final boolean slotIndexIsInCraftingMatrix = CRAFT_MATRIX_EMULATION_SET.contains(localFromSlot);
+        if (fromSlot < PLAYER_INV_LENGTH) {
+            return transferStackToPack(stack);
+        } else if (slotIndexIsInCraftingMatrix) {
+            return transferToPackThenPlayerInv(stack);
+        } else {
+            return mergePlayerInv(stack);
+        }
+    }
+
+    /**
+     * Moves a stack from the emulated crafting grid into backpack storage, sending whatever doesn't fit to the player
+     * inventory. This keeps grid items inside the backpack, including when NEI clears the grid by shift-clicking each
+     * slot.
+     *
+     * @param stack the source slot's stack; its size is reduced by what was moved
+     * @return true if any items moved to either inventory
+     */
+    private boolean transferToPackThenPlayerInv(ItemStack stack) {
+        boolean changed = mergeItemStackBackpackInv(stack);
+        if (stack.stackSize != 0) {
+            changed |= mergePlayerInv(stack);
+        }
+        return changed;
+    }
+
     private boolean mergeToolSlot(ItemStack stack) {
         return mergeItemStack(stack, TOOL_START, TOOL_END + 1, false);
     }
@@ -169,7 +247,7 @@ public class ContainerBackpack extends ContainerAdventure {
             if (stackSize == 0) return changesMade;
         }
 
-        changesMade = changesMade | findSlotToMoveStackTo(stack); // no short circuit
+        changesMade |= findSlotToMoveStackTo(stack); // no short circuit
         return changesMade;
     }
 
@@ -209,7 +287,7 @@ public class ContainerBackpack extends ContainerAdventure {
             boolean areItemsEqual = areItemsEqual(stack, currentStack);
             if (!areItemsEqual) continue;
 
-            changesMade = changesMade | tryMergeItemsInSlot(currentItemSlot, stack);
+            changesMade |= tryMergeItemsInSlot(currentItemSlot, stack);
         }
         return changesMade;
     }
@@ -396,9 +474,8 @@ public class ContainerBackpack extends ContainerAdventure {
      * @return Crafting matrix emulation indices as a Set
      */
     public static Set<Integer> findCraftMatrixEmulationIDsAsSet() {
-        final int[] emulatedCraftingMatrixInsideBackpack = ContainerBackpack.findCraftMatrixEmulationIDs();
         final Set<Integer> emulatedCraftingMatrixIndicesAsSet = new HashSet<>();
-        for (int i : emulatedCraftingMatrixInsideBackpack) {
+        for (int i : CRAFT_MATRIX_EMULATION) {
             emulatedCraftingMatrixIndicesAsSet.add(i);
         }
         return emulatedCraftingMatrixIndicesAsSet;
