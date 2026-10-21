@@ -110,6 +110,17 @@ public class ContainerBackpack extends ContainerAdventure {
         super.detectAndSendChanges();
     }
 
+    /**
+     * Sends the craft result slot to the client when it changes.
+     * <p>
+     * Vanilla never syncs crafting result slots ({@code EntityPlayerMP.sendSlotContents} skips {@code SlotCrafting})
+     * because the client normally computes the result itself. Here the client's hidden craft matrix is only refilled on
+     * clicks, so its result can go stale, and the server pushes the real one instead.
+     * <p>
+     * Only this one slot is sent. A full container resync here would overwrite the client's predicted state in the
+     * middle of a burst of clicks (e.g. NEI filling the grid), and later quantity-only updates are suppressed, which
+     * left a ghost stack on the cursor.
+     */
     @SuppressWarnings("unchecked")
     private void syncCraftResultToClient() {
         ItemStack stackA = ((Slot) inventorySlots.get(CRAFT_RESULT)).getStack();
@@ -265,8 +276,7 @@ public class ContainerBackpack extends ContainerAdventure {
         for (int i : BACKPACK_INV_IDS) {
             final Slot currentItemSlot = (Slot) this.inventorySlots.get(i);
             if (currentItemSlot.getHasStack()) continue;
-            moveStackToSlot(currentItemSlot, stack);
-            changesMade = true;
+            changesMade = moveStackToSlot(currentItemSlot, stack);
             break;
         }
         return changesMade;
@@ -300,15 +310,19 @@ public class ContainerBackpack extends ContainerAdventure {
      *
      * @param slot  an empty destination slot
      * @param stack the stack to move from; its size is reduced by what was moved
+     * @return true if any items were placed
      */
-    private void moveStackToSlot(Slot slot, ItemStack stack) {
-        final ItemStack stackCopy = stack.copy();
+    private boolean moveStackToSlot(Slot slot, ItemStack stack) {
         final int amountMoved = getAmountMovedBetweenSlots(slot, stack);
+        // check the comment in tryMergeItemsInSlot
+        if (amountMoved <= 0) return false;
+
+        final ItemStack stackCopy = stack.copy();
 
         stack.stackSize -= amountMoved;
         stackCopy.stackSize = amountMoved;
         slot.putStack(stackCopy);
-
+        return true;
     }
 
     /**
@@ -316,13 +330,13 @@ public class ContainerBackpack extends ContainerAdventure {
      *
      * @param slot        a slot holding a stack that matches {@code stackToMove}
      * @param stackToMove the stack to move from; its size is reduced by what was moved
-     * @return false if the slot was already full
+     * @return false if nothing could be moved
      */
     private boolean tryMergeItemsInSlot(Slot slot, ItemStack stackToMove) {
         final ItemStack slotStack = slot.getStack();
         final int amountMoved = getAmountMovedBetweenSlots(slot, stackToMove);
-
-        if (amountMoved == 0) return false;
+        // <= is important, it protects from illegal stacks which would cause negative amounts being moved
+        if (amountMoved <= 0) return false;
 
         slotStack.stackSize += amountMoved;
         stackToMove.stackSize -= amountMoved;
