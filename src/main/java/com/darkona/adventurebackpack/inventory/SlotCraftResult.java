@@ -1,11 +1,11 @@
 package com.darkona.adventurebackpack.inventory;
 
+import com.darkona.adventurebackpack.reference.LoadedMods;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 
-import cpw.mods.fml.common.Loader;
 
 public class SlotCraftResult extends SlotCrafting {
 
@@ -21,7 +21,7 @@ public class SlotCraftResult extends SlotCrafting {
     public void onPickupFromSlot(EntityPlayer player, ItemStack stack) {
         eventHandler.syncCraftMatrixWithInventory(true); // pre craft sync
 
-        boolean didHandle = Loader.isModLoaded("TConstruct") && TinkerCompat.handleCraft(eventHandler, player, stack);
+        boolean didHandle = LoadedMods.TCONSTRUCT && TinkerCompat.handleCraft(eventHandler, player, stack);
 
         if (!didHandle) {
             super.onPickupFromSlot(player, stack);
