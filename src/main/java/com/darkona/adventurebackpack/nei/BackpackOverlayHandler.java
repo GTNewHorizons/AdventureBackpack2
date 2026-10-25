@@ -5,6 +5,7 @@ import static com.darkona.adventurebackpack.inventory.ContainerBackpack.findCraf
 import java.util.HashSet;
 import java.util.Set;
 
+import com.darkona.adventurebackpack.inventory.ContainerBackpack;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 
@@ -39,7 +40,7 @@ public class BackpackOverlayHandler extends DefaultOverlayHandler {
      */
     @Override
     protected Set<Slot> getCraftMatrixSlots(GuiContainer gui, IRecipeHandler handler) {
-        final Set<Integer> emulatedCraftingMatrixInsideBackpack = findCraftMatrixEmulationIDsAsSet();
+        final Set<Integer> emulatedCraftingMatrixInsideBackpack = ContainerBackpack.CRAFT_MATRIX_EMULATION_SET;
         final Set<Slot> slots = new HashSet<>();
 
         for (Object obj : gui.inventorySlots.inventorySlots) {

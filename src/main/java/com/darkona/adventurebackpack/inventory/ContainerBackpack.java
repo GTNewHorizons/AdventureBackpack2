@@ -7,6 +7,7 @@ import static com.darkona.adventurebackpack.common.Constants.BUCKET_OUT_RIGHT;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_LOWER;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_UPPER;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +41,10 @@ public class ContainerBackpack extends ContainerAdventure {
     private static final int MATRIX_DIMENSION = 3;
     private static final int CRAFT_RESULT = BUCKET_RIGHT + 2 + (MATRIX_DIMENSION * MATRIX_DIMENSION);
     private static final int[] CRAFT_MATRIX_EMULATION = findCraftMatrixEmulationIDs();
-    private static final Set<Integer> CRAFT_MATRIX_EMULATION_SET = findCraftMatrixEmulationIDsAsSet();
+
+    // since it's public I made it unmodifiable
+    public static final Set<Integer> CRAFT_MATRIX_EMULATION_SET =
+            Collections.unmodifiableSet(findCraftMatrixEmulationIDsAsSet());
 
     /**
      * Container indices of the backpack storage slots, excluding the 3x3 block that mirrors the hidden crafting matrix.
