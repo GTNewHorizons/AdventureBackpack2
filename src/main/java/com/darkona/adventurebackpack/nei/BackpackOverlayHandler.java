@@ -26,16 +26,6 @@ public class BackpackOverlayHandler extends DefaultOverlayHandler {
         return super.canMoveFrom(slot, gui);
     }
 
-    /**
-     * This method bootstraps the function the backpack uses to declare the slots that are used to emulate the crafting.
-     * The overridden function searches the grid and assumes all adjacent slots are also parts of the crafting. The
-     * overridden function would empty the backpack since it assumed all slots are for crafting and would only leave the
-     * correct items.
-     * 
-     * @param gui     The graphical user interface that's displayed on the screen
-     * @param handler The recipe that the user is trying to apply/overlay
-     * @return Set of slots representing the crafting area
-     */
     @Override
     protected Set<Slot> getCraftMatrixSlots(GuiContainer gui, IRecipeHandler handler) {
         final Set<Integer> emulatedCraftingMatrixInsideBackpack = ContainerBackpack.CRAFT_MATRIX_EMULATION_SET;

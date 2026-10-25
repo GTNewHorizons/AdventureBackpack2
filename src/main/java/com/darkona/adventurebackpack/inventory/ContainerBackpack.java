@@ -46,10 +46,7 @@ public class ContainerBackpack extends ContainerAdventure {
     public static final Set<Integer> CRAFT_MATRIX_EMULATION_SET =
             Collections.unmodifiableSet(findCraftMatrixEmulationIDsAsSet());
 
-    /**
-     * Container indices of the backpack storage slots, excluding the 3x3 block that mirrors the hidden crafting matrix.
-     * Items merged into those slots would land in the crafting grid. Computed once; do not modify.
-     */
+
     private static final int[] BACKPACK_INV_IDS = backpackInvIDs();
 
     protected final InventoryCraftingBackpack craftMatrix = new InventoryCraftingBackpack(
@@ -164,14 +161,6 @@ public class ContainerBackpack extends ContainerAdventure {
         }
     }
 
-    /**
-     * Moves a stack from the emulated crafting grid into backpack storage, sending whatever doesn't fit to the player
-     * inventory. This keeps grid items inside the backpack, including when NEI clears the grid by shift-clicking each
-     * slot.
-     *
-     * @param stack the source slot's stack; its size is reduced by what was moved
-     * @return true if any items moved to either inventory
-     */
     private boolean transferToPackThenPlayerInv(ItemStack stack) {
         boolean changed = mergeBackpackInv(stack);
         if (stack.stackSize != 0) {
@@ -292,10 +281,6 @@ public class ContainerBackpack extends ContainerAdventure {
         }
     }
 
-    /**
-     *
-     * @return Crafting matrix emulation indices as a Set
-     */
     public static Set<Integer> findCraftMatrixEmulationIDsAsSet() {
         final Set<Integer> emulatedCraftingMatrixIndicesAsSet = new HashSet<>();
         for (int i : CRAFT_MATRIX_EMULATION) {
@@ -304,9 +289,6 @@ public class ContainerBackpack extends ContainerAdventure {
         return emulatedCraftingMatrixIndicesAsSet;
     }
 
-    /**
-     * Returns the array of inventory slotIDs, emulates the craftMatrix in the lower right corner of the inventory.
-     */
     private static int[] findCraftMatrixEmulationIDs() {
         int[] slotsArray = new int[MATRIX_DIMENSION * MATRIX_DIMENSION];
         for (int row = 0; row < MATRIX_DIMENSION; row++) {
