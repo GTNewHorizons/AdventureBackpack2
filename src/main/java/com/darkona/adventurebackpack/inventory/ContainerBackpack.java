@@ -325,13 +325,12 @@ public class ContainerBackpack extends ContainerAdventure {
         final int backpackInvSize = BACK_INV_ROWS * BACK_INV_COLUMNS - totalCraftingAreaSize;
         final int[] backpackInvIDs = new int[backpackInvSize];
 
-        final Set<Integer> backpackCraftingEmIDs = findCraftMatrixEmulationIDsAsSet();
         int numberOfCraftingSlotsPassed = 0;
 
         for (int i = 0; i < BACK_INV_ROWS; i++) {
             for (int j = 0; j < BACK_INV_COLUMNS; j++) {
                 final int slotIndex = i * BACK_INV_COLUMNS + j;
-                if (!backpackCraftingEmIDs.contains(slotIndex)) {
+                if (!CRAFT_MATRIX_EMULATION_SET.contains(slotIndex)) {
                     final int indexToSet = slotIndex - numberOfCraftingSlotsPassed;
                     backpackInvIDs[indexToSet] = slotIndex + BACK_INV_START;
                     continue;
