@@ -43,9 +43,8 @@ public class ContainerBackpack extends ContainerAdventure {
     private static final int[] CRAFT_MATRIX_EMULATION = findCraftMatrixEmulationIDs();
 
     // since it's public I made it unmodifiable
-    public static final Set<Integer> CRAFT_MATRIX_EMULATION_SET =
-            Collections.unmodifiableSet(findCraftMatrixEmulationIDsAsSet());
-
+    public static final Set<Integer> CRAFT_MATRIX_EMULATION_SET = Collections
+            .unmodifiableSet(findCraftMatrixEmulationIDsAsSet());
 
     private static final int[] BACKPACK_INV_IDS = backpackInvIDs();
 
@@ -152,13 +151,11 @@ public class ContainerBackpack extends ContainerAdventure {
         final int localFromSlot = fromSlot - BACK_INV_START;
 
         final boolean slotIndexIsInCraftingMatrix = CRAFT_MATRIX_EMULATION_SET.contains(localFromSlot);
-        if (fromSlot < PLAYER_INV_LENGTH) {
-            return transferStackToPack(stack);
-        } else if (slotIndexIsInCraftingMatrix) {
+        if (slotIndexIsInCraftingMatrix) {
             return transferToPackThenPlayerInv(stack);
-        } else {
-            return mergePlayerInv(stack);
+
         }
+        return super.transferFromSlot(fromSlot, stack);
     }
 
     private boolean transferToPackThenPlayerInv(ItemStack stack) {

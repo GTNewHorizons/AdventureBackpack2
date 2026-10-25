@@ -3,10 +3,10 @@ package com.darkona.adventurebackpack.nei;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.darkona.adventurebackpack.inventory.ContainerBackpack;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 
+import com.darkona.adventurebackpack.inventory.ContainerBackpack;
 import com.darkona.adventurebackpack.inventory.SlotBackpack;
 
 import codechicken.nei.recipe.DefaultOverlayHandler;

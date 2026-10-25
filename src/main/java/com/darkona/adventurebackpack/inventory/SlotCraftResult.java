@@ -1,11 +1,11 @@
 package com.darkona.adventurebackpack.inventory;
 
-import com.darkona.adventurebackpack.reference.LoadedMods;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 
+import com.darkona.adventurebackpack.reference.LoadedMods;
 
 public class SlotCraftResult extends SlotCrafting {
 

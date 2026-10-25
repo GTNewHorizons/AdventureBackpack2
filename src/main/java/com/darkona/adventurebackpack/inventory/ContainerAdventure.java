@@ -161,7 +161,6 @@ public abstract class ContainerAdventure extends Container {
         return inventory.isUseableByPlayer(player);
     }
 
-
     @Override
     protected boolean mergeItemStack(ItemStack initStack, int minIndex, int maxIndex, boolean backward) {
         return mergeItemStack(initStack, getSlotIds(minIndex, maxIndex, backward));
@@ -173,24 +172,25 @@ public abstract class ContainerAdventure extends Container {
         if (initStack.isStackable()) {
             for (int i : slotIds) {
                 if (initStack.stackSize > 0) {
+                    Slot activeSlot = (Slot) this.inventorySlots.get(i);
+                    if (!activeSlot.getHasStack()) continue;
                     changesMade |= tryMergeTo(i, initStack);
                 }
             }
         }
         if (initStack.stackSize > 0) {
-
             for (int i : slotIds) {
+                Slot activeSlot = (Slot) this.inventorySlots.get(i);
+                if (activeSlot.getHasStack()) continue;
                 changesMade |= moveItemsIntoEmptySlot(i, initStack);
+                break;
             }
         }
-
         return changesMade;
-
-
     }
 
     private int[] getSlotIds(int minIndex, int maxIndex, boolean backward) {
-        int activeIndex = (backward ? maxIndex - 1: minIndex);
+        int activeIndex = (backward ? maxIndex - 1 : minIndex);
         int[] slotIds = new int[maxIndex - minIndex];
 
         for (int i = 0; i < slotIds.length; i++) {
@@ -215,16 +215,14 @@ public abstract class ContainerAdventure extends Container {
 
     private boolean moveItemsIntoEmptySlot(int activeIndex, ItemStack initStack) {
         Slot activeSlot = (Slot) this.inventorySlots.get(activeIndex);
-        ItemStack activeStack = activeSlot.getStack();
-        if (activeStack != null) return false;
         return tryPushItemsToSlot(activeSlot, initStack);
     }
 
     private boolean areItemsEqual(ItemStack initStack, ItemStack stack2) {
-        boolean sameItem =  initStack.getItem() == stack2.getItem();
+        boolean sameItem = initStack.getItem() == stack2.getItem();
         boolean sameDamage = !initStack.getHasSubtypes() || initStack.getItemDamage() == stack2.getItemDamage();
         boolean sameTags = ItemStack.areItemStackTagsEqual(initStack, stack2);
-        return  sameItem && sameDamage && sameTags;
+        return sameItem && sameDamage && sameTags;
     }
 
     private boolean tryMergeItemsInSlot(Slot slot, ItemStack stackToMove) {
@@ -237,7 +235,6 @@ public abstract class ContainerAdventure extends Container {
         mergeStackWithSlot(slot, stackToMove, amountMoved);
         return true;
     }
-
 
     private boolean tryPushItemsToSlot(Slot slot, ItemStack stackToMove) {
         final int amountMoved = getAmountMovedBetweenSlots(slot, stackToMove);
@@ -260,7 +257,6 @@ public abstract class ContainerAdventure extends Container {
         stackToMove.stackSize -= amountMoved;
         slot.onSlotChanged();
     }
-
 
     private int getAmountMovedBetweenSlots(Slot slot, ItemStack stackToMove) {
         final int addedStackSize = stackToMove.stackSize;
