@@ -10,8 +10,6 @@ import static com.darkona.adventurebackpack.common.Constants.TOOL_UPPER;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -148,53 +146,8 @@ public class ContainerBackpack extends ContainerAdventure {
         return true;
     }
 
-    /**
-     * Shift-click handler. Routes the clicked stack to its target inventory, then updates the source slot and fires
-     * {@code onPickupFromSlot} (which performs the craft when the source is the craft result slot).
-     * <p>
-     * Returning a non-null stack makes vanilla repeat the transfer, which is how a single shift-click on the craft
-     * result crafts a full stack.
-     *
-     * @param player   the player shift-clicking
-     * @param fromSlot container index of the clicked slot
-     * @return a copy of the stack before the transfer, or null if nothing moved
-     */
-    @Nullable
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer player, int fromSlot) {
-        Slot slot = getSlot(fromSlot);
-        if (slot == null || slot.getStack() == null) return null;
-        final ItemStack stack = slot.getStack();
-
-        final ItemStack stackCopy = stack.copy();
-
-        final boolean didPushToInventory = tryPushToTargetInventory(fromSlot, stack);
-        if (!didPushToInventory) return null;
-        if (stack.stackSize == 0) {
-            slot.putStack(null);
-        } else {
-            slot.onSlotChanged();
-        }
-
-        if (stack.stackSize == stackCopy.stackSize) return null;
-
-        slot.onPickupFromSlot(player, stack);
-        return stackCopy;
-    }
-
-    /**
-     * Picks where a shift-clicked stack goes, based on its source slot:
-     * <ul>
-     * <li>player inventory → backpack (tools, tanks, storage)</li>
-     * <li>emulated crafting grid → backpack storage, overflow to player inventory</li>
-     * <li>anything else → player inventory</li>
-     * </ul>
-     *
-     * @param fromSlot container index of the source slot
-     * @param stack    the source slot's stack; its size is reduced by what was moved
-     * @return true if any items moved
-     */
-    private boolean tryPushToTargetInventory(int fromSlot, ItemStack stack) {
+    protected boolean transferFromSlot(int fromSlot, ItemStack stack) {
         final int localFromSlot = fromSlot - BACK_INV_START;
 
         final boolean slotIndexIsInCraftingMatrix = CRAFT_MATRIX_EMULATION_SET.contains(localFromSlot);

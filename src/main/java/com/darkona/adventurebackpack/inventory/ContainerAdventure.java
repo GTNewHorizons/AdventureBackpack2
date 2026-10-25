@@ -113,11 +113,8 @@ public abstract class ContainerAdventure extends Container {
         ItemStack stack = slot.getStack();
         ItemStack result = stack.copy();
 
-        if (fromSlot < PLAYER_INV_LENGTH) {
-            if (!transferStackToPack(stack)) return null;
-        } else {
-            if (!mergePlayerInv(stack)) return null;
-        }
+        final boolean didTransfer = transferFromSlot(fromSlot, stack);
+        if (!didTransfer) return null;
 
         if (stack.stackSize == 0) {
             slot.putStack(null);
@@ -129,6 +126,14 @@ public abstract class ContainerAdventure extends Container {
 
         slot.onPickupFromSlot(player, stack);
         return result;
+    }
+
+    protected boolean transferFromSlot(int fromSlot, ItemStack stack) {
+        if (fromSlot < PLAYER_INV_LENGTH) {
+            return transferStackToPack(stack);
+        } else {
+            return mergePlayerInv(stack);
+        }
     }
 
     protected boolean mergePlayerInv(ItemStack stack) {
