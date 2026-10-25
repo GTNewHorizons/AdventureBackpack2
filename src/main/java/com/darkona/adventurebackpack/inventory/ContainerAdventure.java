@@ -174,7 +174,7 @@ public abstract class ContainerAdventure extends Container {
                 if (initStack.stackSize > 0) {
                     Slot activeSlot = (Slot) this.inventorySlots.get(i);
                     if (!activeSlot.getHasStack()) continue;
-                    changesMade |= tryMergeTo(i, initStack);
+                    changesMade |= tryMergeTo(activeSlot, initStack);
                 }
             }
         }
@@ -182,7 +182,7 @@ public abstract class ContainerAdventure extends Container {
             for (int i : slotIds) {
                 Slot activeSlot = (Slot) this.inventorySlots.get(i);
                 if (activeSlot.getHasStack()) continue;
-                changesMade |= moveItemsIntoEmptySlot(i, initStack);
+                changesMade |= tryPushItemsToSlot(activeSlot, initStack);
                 break;
             }
         }
@@ -200,22 +200,16 @@ public abstract class ContainerAdventure extends Container {
         return slotIds;
     }
 
-    private boolean tryMergeTo(int activeIndex, ItemStack initStack) {
-        Slot activeSlot = (Slot) this.inventorySlots.get(activeIndex);
+    private boolean tryMergeTo(Slot activeSlot, ItemStack initStack) {
         ItemStack activeStack = activeSlot.getStack();
-        if (activeStack == null) return false;
 
         boolean areItemsEqual = areItemsEqual(initStack, activeStack);
 
-        if (areItemsEqual) {
+        //the latter is for tinker's construct item equality parity
+        if (areItemsEqual && func_94530_a(initStack, activeSlot)) {
             return tryMergeItemsInSlot(activeSlot, initStack);
         }
         return false;
-    }
-
-    private boolean moveItemsIntoEmptySlot(int activeIndex, ItemStack initStack) {
-        Slot activeSlot = (Slot) this.inventorySlots.get(activeIndex);
-        return tryPushItemsToSlot(activeSlot, initStack);
     }
 
     private boolean areItemsEqual(ItemStack initStack, ItemStack stack2) {
@@ -240,11 +234,11 @@ public abstract class ContainerAdventure extends Container {
         final int amountMoved = getAmountMovedBetweenSlots(slot, stackToMove);
 
         if (amountMoved <= 0) return false;
-        pushItemsToSlot(slot, stackToMove, amountMoved);
+        pushItemsToEmptySlot(slot, stackToMove, amountMoved);
         return true;
     }
 
-    private void pushItemsToSlot(Slot slot, ItemStack stackToMove, int amountMoved) {
+    private void pushItemsToEmptySlot(Slot slot, ItemStack stackToMove, int amountMoved) {
         ItemStack stack = stackToMove.copy();
         stackToMove.stackSize -= amountMoved;
         stack.stackSize = amountMoved;
