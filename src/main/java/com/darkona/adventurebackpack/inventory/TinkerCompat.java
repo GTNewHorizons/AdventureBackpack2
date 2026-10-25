@@ -40,14 +40,13 @@ public class TinkerCompat {
         int toRemoveIndex = 0;
         IInventory inventory = eventHandler.craftMatrix;
 
-        // I'm not sure if this is support to be lte and not lt
-        for (int i = 0; i <= inventory.getSizeInventory(); i++) {
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
             if (i == 4) continue;
             ItemStack item = inventory.getStackInSlot(i);
             if (item == null) {
                 continue;
             }
-            if (toRemoveArray == null) {
+            if (toRemoveArray == null || toRemoveIndex >= toRemoveArray.length) {
                 inventory.decrStackSize(i, 1);
             } else {
                 inventory.decrStackSize(i, toRemoveArray[toRemoveIndex]);
