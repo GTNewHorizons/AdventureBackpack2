@@ -1,7 +1,5 @@
 package com.darkona.adventurebackpack.nei;
 
-import static com.darkona.adventurebackpack.inventory.ContainerBackpack.findCraftMatrixEmulationIDsAsSet;
-
 import java.util.HashSet;
 import java.util.Set;
 
