@@ -113,11 +113,9 @@ public abstract class ContainerAdventure extends Container {
         ItemStack stack = slot.getStack();
         ItemStack result = stack.copy();
 
-        if (fromSlot < PLAYER_INV_LENGTH) {
-            if (!transferStackToPack(stack)) return null;
-        } else {
-            if (!mergePlayerInv(stack)) return null;
-        }
+        final boolean didTransfer = transferFromSlot(fromSlot, stack);
+        if (!didTransfer) return null;
+        slot.onSlotChange(stack, result);
 
         if (stack.stackSize == 0) {
             slot.putStack(null);
@@ -129,6 +127,14 @@ public abstract class ContainerAdventure extends Container {
 
         slot.onPickupFromSlot(player, stack);
         return result;
+    }
+
+    protected boolean transferFromSlot(int fromSlot, ItemStack stack) {
+        if (fromSlot < PLAYER_INV_LENGTH) {
+            return transferStackToPack(stack);
+        } else {
+            return mergePlayerInv(stack);
+        }
     }
 
     protected boolean mergePlayerInv(ItemStack stack) {
@@ -158,65 +164,113 @@ public abstract class ContainerAdventure extends Container {
 
     @Override
     protected boolean mergeItemStack(ItemStack initStack, int minIndex, int maxIndex, boolean backward) {
+        return mergeItemStack(initStack, getSlotIds(minIndex, maxIndex, backward));
+    }
+
+    protected boolean mergeItemStack(ItemStack initStack, int[] slotIds) {
         boolean changesMade = false;
-        int activeIndex = (backward ? maxIndex - 1 : minIndex);
-        Slot activeSlot;
-        ItemStack activeStack;
 
         if (initStack.isStackable()) {
-            while (initStack.stackSize > 0
-                    && (!backward && activeIndex < maxIndex || backward && activeIndex >= minIndex)) {
-                activeSlot = (Slot) this.inventorySlots.get(activeIndex);
-                activeStack = activeSlot.getStack();
-
-                if (activeStack != null && activeStack.getItem() == initStack.getItem()
-                        && (!initStack.getHasSubtypes() || initStack.getItemDamage() == activeStack.getItemDamage())
-                        && ItemStack.areItemStackTagsEqual(initStack, activeStack)) {
-                    int mergedSize = activeStack.stackSize + initStack.stackSize;
-                    int maxStackSize = Math.min(initStack.getMaxStackSize(), activeSlot.getSlotStackLimit());
-
-                    if (mergedSize <= maxStackSize) {
-                        initStack.stackSize = 0;
-                        activeStack.stackSize = mergedSize;
-                        activeSlot.onSlotChanged();
-                        changesMade = true;
-                    } else if (activeStack.stackSize < maxStackSize && !(activeSlot instanceof SlotFluid)) {
-                        initStack.stackSize -= maxStackSize - activeStack.stackSize;
-                        activeStack.stackSize = maxStackSize;
-                        activeSlot.onSlotChanged();
-                        changesMade = true;
-                    }
+            for (int i : slotIds) {
+                if (initStack.stackSize > 0) {
+                    Slot activeSlot = (Slot) this.inventorySlots.get(i);
+                    if (!activeSlot.getHasStack()) continue;
+                    changesMade |= tryMergeTo(activeSlot, initStack);
                 }
-                activeIndex += (backward ? -1 : 1);
             }
         }
-
         if (initStack.stackSize > 0) {
-            activeIndex = (backward ? maxIndex - 1 : minIndex);
-
-            while (!backward && activeIndex < maxIndex || backward && activeIndex >= minIndex) {
-                activeSlot = (Slot) this.inventorySlots.get(activeIndex);
-                activeStack = activeSlot.getStack();
-
-                if (activeStack == null /* && activeSlot.isItemValid(initStack) */) {
-                    ItemStack copyStack = initStack.copy();
-                    int mergedSize = copyStack.stackSize = Math
-                            .min(copyStack.stackSize, activeSlot.getSlotStackLimit());
-
-                    activeSlot.putStack(copyStack);
-                    if (mergedSize >= initStack.stackSize) {
-                        initStack.stackSize = 0;
-                    } else {
-                        initStack.stackSize -= mergedSize;
-                    }
-                    changesMade = true;
-                    break;
-                }
-                activeIndex += (backward ? -1 : 1);
+            for (int i : slotIds) {
+                Slot activeSlot = (Slot) this.inventorySlots.get(i);
+                if (activeSlot.getHasStack()) continue;
+                changesMade |= tryPushItemsToSlot(activeSlot, initStack);
+                break;
             }
         }
-
         return changesMade;
+    }
+
+    private int[] getSlotIds(int minIndex, int maxIndex, boolean backward) {
+        int activeIndex = (backward ? maxIndex - 1 : minIndex);
+        int[] slotIds = new int[maxIndex - minIndex];
+
+        for (int i = 0; i < slotIds.length; i++) {
+            slotIds[i] = activeIndex;
+            activeIndex = (backward ? activeIndex - 1 : activeIndex + 1);
+        }
+        return slotIds;
+    }
+
+    private boolean tryMergeTo(Slot activeSlot, ItemStack initStack) {
+        ItemStack activeStack = activeSlot.getStack();
+
+        boolean areItemsEqual = areItemsEqual(initStack, activeStack);
+
+        // the latter is for tinker's construct item equality parity
+        if (areItemsEqual && func_94530_a(initStack, activeSlot)) {
+            return tryMergeItemsInSlot(activeSlot, initStack);
+        }
+        return false;
+    }
+
+    private boolean areItemsEqual(ItemStack initStack, ItemStack stack2) {
+        boolean sameItem = initStack.getItem() == stack2.getItem();
+        boolean sameDamage = !initStack.getHasSubtypes() || initStack.getItemDamage() == stack2.getItemDamage();
+        boolean sameTags = ItemStack.areItemStackTagsEqual(initStack, stack2);
+        return sameItem && sameDamage && sameTags;
+    }
+
+    private boolean tryMergeItemsInSlot(Slot slot, ItemStack stackToMove) {
+        final int amountMoved = getAmountMovedBetweenSlots(slot, stackToMove);
+        final int stackSize = stackToMove.stackSize;
+        // <= is important, it protects from illegal stacks which would cause negative amounts being moved
+
+        if (amountMoved <= 0) return false;
+        if (stackSize > amountMoved && (slot instanceof SlotFluid)) return false; // reject fluid partial move
+        mergeStackWithSlot(slot, stackToMove, amountMoved);
+        return true;
+    }
+
+    private boolean tryPushItemsToSlot(Slot slot, ItemStack stackToMove) {
+        final int amountMoved = getAmountMovedBetweenSlots(slot, stackToMove);
+
+        if (amountMoved <= 0) return false;
+        pushItemsToEmptySlot(slot, stackToMove, amountMoved);
+        return true;
+    }
+
+    private void pushItemsToEmptySlot(Slot slot, ItemStack stackToMove, int amountMoved) {
+        ItemStack stack = stackToMove.copy();
+        stackToMove.stackSize -= amountMoved;
+        stack.stackSize = amountMoved;
+        slot.putStack(stack);
+    }
+
+    private void mergeStackWithSlot(Slot slot, ItemStack stackToMove, int amountMoved) {
+        final ItemStack slotStack = slot.getStack();
+        slotStack.stackSize += amountMoved;
+        stackToMove.stackSize -= amountMoved;
+        slot.onSlotChanged();
+    }
+
+    private int getAmountMovedBetweenSlots(Slot slot, ItemStack stackToMove) {
+        final int addedStackSize = stackToMove.stackSize;
+        final int maxStackSize = maxStackSize(slot, stackToMove);
+
+        if (!slot.getHasStack()) return Math.min(addedStackSize, maxStackSize);
+
+        final ItemStack slotStack = slot.getStack();
+        final int slotStackSize = slotStack.stackSize;
+
+        final int availableSize = maxStackSize - slotStackSize;
+        return Math.min(addedStackSize, availableSize);
+    }
+
+    private int maxStackSize(Slot slot, ItemStack stack) {
+        final int maxSlotStackSize = slot.getSlotStackLimit();
+
+        final int maxStackSizeSlot = stack.getMaxStackSize();
+        return Math.min(maxStackSizeSlot, maxSlotStackSize);
     }
 
     @Override

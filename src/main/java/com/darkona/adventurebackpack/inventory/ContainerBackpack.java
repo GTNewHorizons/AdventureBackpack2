@@ -7,6 +7,10 @@ import static com.darkona.adventurebackpack.common.Constants.BUCKET_OUT_RIGHT;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_LOWER;
 import static com.darkona.adventurebackpack.common.Constants.TOOL_UPPER;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -15,6 +19,7 @@ import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraftforge.fluids.FluidTank;
 
 import com.darkona.adventurebackpack.common.Constants;
@@ -36,6 +41,11 @@ public class ContainerBackpack extends ContainerAdventure {
     private static final int MATRIX_DIMENSION = 3;
     private static final int CRAFT_RESULT = BUCKET_RIGHT + 2 + (MATRIX_DIMENSION * MATRIX_DIMENSION);
     private static final int[] CRAFT_MATRIX_EMULATION = findCraftMatrixEmulationIDs();
+
+    public static final Set<Integer> CRAFT_MATRIX_EMULATION_SET = Collections
+            .unmodifiableSet(findCraftMatrixEmulationIDsAsSet());
+
+    private static final int[] BACKPACK_INV_IDS = backpackInvIDs();
 
     protected final InventoryCraftingBackpack craftMatrix = new InventoryCraftingBackpack(
             this,
@@ -93,21 +103,32 @@ public class ContainerBackpack extends ContainerAdventure {
     @Override
     public void detectAndSendChanges() {
         syncCraftMatrixWithInventory(true);
-        syncCraftResultToServer();
+        syncCraftResultToClient();
         super.detectAndSendChanges();
     }
 
+    /**
+     * Sends the craft result slot to the client when it changes.
+     * <p>
+     * Vanilla never syncs crafting result slots ({@code EntityPlayerMP.sendSlotContents} skips {@code SlotCrafting})
+     * because the client normally computes the result itself. Here the client's hidden craft matrix is only refilled on
+     * clicks, so its result can go stale, and the server pushes the real one instead.
+     * <p>
+     * Only this one slot is sent. A full container resync here would overwrite the client's predicted state in the
+     * middle of a burst of clicks (e.g. NEI filling the grid), and later quantity-only updates are suppressed.
+     */
     @SuppressWarnings("unchecked")
-    private void syncCraftResultToServer() {
+    private void syncCraftResultToClient() {
         ItemStack stackA = ((Slot) inventorySlots.get(CRAFT_RESULT)).getStack();
         ItemStack stackB = (ItemStack) inventoryItemStacks.get(CRAFT_RESULT);
 
         if (!ItemStack.areItemStacksEqual(stackB, stackA)) {
             stackB = stackA == null ? null : stackA.copy();
             inventoryItemStacks.set(CRAFT_RESULT, stackB);
-
-            if (player instanceof EntityPlayerMP)
-                ((EntityPlayerMP) player).sendContainerAndContentsToPlayer(this, this.getInventory());
+            if (player instanceof EntityPlayerMP) {
+                S2FPacketSetSlot packet = new S2FPacketSetSlot(this.windowId, CRAFT_RESULT, stackB);
+                ((EntityPlayerMP) player).playerNetServerHandler.sendPacket(packet);
+            }
         }
     }
 
@@ -123,12 +144,37 @@ public class ContainerBackpack extends ContainerAdventure {
         return true;
     }
 
+    @Override
+    protected boolean transferFromSlot(int fromSlot, ItemStack stack) {
+        final int localFromSlot = fromSlot - BACK_INV_START;
+
+        final boolean slotIndexIsInCraftingMatrix = CRAFT_MATRIX_EMULATION_SET.contains(localFromSlot);
+        if (slotIndexIsInCraftingMatrix) {
+            return transferToPackThenPlayerInv(stack);
+
+        }
+        return super.transferFromSlot(fromSlot, stack);
+    }
+
+    @Override
+    public boolean func_94530_a /* canMergeSlot */(ItemStack stack, Slot slot) {
+        return slot.inventory != this.craftResult && super.func_94530_a(stack, slot);
+    }
+
+    private boolean transferToPackThenPlayerInv(ItemStack stack) {
+        boolean changed = mergeBackpackInv(stack);
+        if (stack.stackSize != 0) {
+            changed |= mergePlayerInv(stack);
+        }
+        return changed;
+    }
+
     private boolean mergeToolSlot(ItemStack stack) {
         return mergeItemStack(stack, TOOL_START, TOOL_END + 1, false);
     }
 
     private boolean mergeBackpackInv(ItemStack stack) {
-        return mergeItemStack(stack, BACK_INV_START, BACK_INV_END + 1, false);
+        return mergeItemStack(stack, BACKPACK_INV_IDS);
     }
 
     private boolean mergeLeftBucket(ItemStack stack) {
@@ -235,9 +281,14 @@ public class ContainerBackpack extends ContainerAdventure {
         }
     }
 
-    /**
-     * Returns the array of inventory slotIDs, emulates the craftMatrix in the lower right corner of the inventory.
-     */
+    public static Set<Integer> findCraftMatrixEmulationIDsAsSet() {
+        final Set<Integer> emulatedCraftingMatrixIndicesAsSet = new HashSet<>();
+        for (int i : CRAFT_MATRIX_EMULATION) {
+            emulatedCraftingMatrixIndicesAsSet.add(i);
+        }
+        return emulatedCraftingMatrixIndicesAsSet;
+    }
+
     private static int[] findCraftMatrixEmulationIDs() {
         int[] slotsArray = new int[MATRIX_DIMENSION * MATRIX_DIMENSION];
         for (int row = 0; row < MATRIX_DIMENSION; row++) {
@@ -249,5 +300,26 @@ public class ContainerBackpack extends ContainerAdventure {
             }
         }
         return slotsArray;
+    }
+
+    private static int[] backpackInvIDs() {
+        final int totalCraftingAreaSize = MATRIX_DIMENSION * MATRIX_DIMENSION;
+        final int backpackInvSize = BACK_INV_ROWS * BACK_INV_COLUMNS - totalCraftingAreaSize;
+        final int[] backpackInvIDs = new int[backpackInvSize];
+
+        int numberOfCraftingSlotsPassed = 0;
+
+        for (int i = 0; i < BACK_INV_ROWS; i++) {
+            for (int j = 0; j < BACK_INV_COLUMNS; j++) {
+                final int slotIndex = i * BACK_INV_COLUMNS + j;
+                if (!CRAFT_MATRIX_EMULATION_SET.contains(slotIndex)) {
+                    final int indexToSet = slotIndex - numberOfCraftingSlotsPassed;
+                    backpackInvIDs[indexToSet] = slotIndex + BACK_INV_START;
+                    continue;
+                }
+                numberOfCraftingSlotsPassed++;
+            }
+        }
+        return backpackInvIDs;
     }
 }

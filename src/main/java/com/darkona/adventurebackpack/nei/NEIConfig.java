@@ -8,10 +8,20 @@ import codechicken.nei.api.IConfigureNEI;
 
 public class NEIConfig implements IConfigureNEI {
 
+    /**
+     * Starting X coordinates for crafting grid in backpack
+     */
+    final static private int X_START = 127;
+
+    /**
+     * Starting Y coordinates for crafting grid in backpack
+     */
+    final static private int Y_START = 55;
+
     @Override
     public void loadConfig() {
-        API.registerGuiOverlay(GuiAdvBackpack.class, "crafting", new BackpackStackPositioner());
-        API.registerGuiOverlayHandler(GuiAdvBackpack.class, new BackpackOverlayHandler(), "crafting");
+        API.registerGuiOverlay(GuiAdvBackpack.class, "crafting", X_START, Y_START);
+        API.registerGuiOverlayHandler(GuiAdvBackpack.class, new BackpackOverlayHandler(X_START, Y_START), "crafting");
     }
 
     @Override
