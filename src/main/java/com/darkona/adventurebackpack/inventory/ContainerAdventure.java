@@ -115,6 +115,7 @@ public abstract class ContainerAdventure extends Container {
 
         final boolean didTransfer = transferFromSlot(fromSlot, stack);
         if (!didTransfer) return null;
+        slot.onSlotChange(stack, result);
 
         if (stack.stackSize == 0) {
             slot.putStack(null);
