@@ -206,7 +206,7 @@ public abstract class ContainerAdventure extends Container {
 
         boolean areItemsEqual = areItemsEqual(initStack, activeStack);
 
-        //the latter is for tinker's construct item equality parity
+        // the latter is for tinker's construct item equality parity
         if (areItemsEqual && func_94530_a(initStack, activeSlot)) {
             return tryMergeItemsInSlot(activeSlot, initStack);
         }

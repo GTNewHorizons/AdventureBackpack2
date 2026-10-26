@@ -156,6 +156,11 @@ public class ContainerBackpack extends ContainerAdventure {
         return super.transferFromSlot(fromSlot, stack);
     }
 
+    @Override
+    public boolean func_94530_a /* canMergeSlot */(ItemStack stack, Slot slot) {
+        return slot.inventory != this.craftResult && super.func_94530_a(stack, slot);
+    }
+
     private boolean transferToPackThenPlayerInv(ItemStack stack) {
         boolean changed = mergeBackpackInv(stack);
         if (stack.stackSize != 0) {
