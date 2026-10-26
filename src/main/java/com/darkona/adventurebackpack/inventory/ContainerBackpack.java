@@ -42,7 +42,6 @@ public class ContainerBackpack extends ContainerAdventure {
     private static final int CRAFT_RESULT = BUCKET_RIGHT + 2 + (MATRIX_DIMENSION * MATRIX_DIMENSION);
     private static final int[] CRAFT_MATRIX_EMULATION = findCraftMatrixEmulationIDs();
 
-    // since it's public I made it unmodifiable
     public static final Set<Integer> CRAFT_MATRIX_EMULATION_SET = Collections
             .unmodifiableSet(findCraftMatrixEmulationIDsAsSet());
 
@@ -116,8 +115,7 @@ public class ContainerBackpack extends ContainerAdventure {
      * clicks, so its result can go stale, and the server pushes the real one instead.
      * <p>
      * Only this one slot is sent. A full container resync here would overwrite the client's predicted state in the
-     * middle of a burst of clicks (e.g. NEI filling the grid), and later quantity-only updates are suppressed, which
-     * left a ghost stack on the cursor.
+     * middle of a burst of clicks (e.g. NEI filling the grid), and later quantity-only updates are suppressed.
      */
     @SuppressWarnings("unchecked")
     private void syncCraftResultToClient() {
