@@ -39,10 +39,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 public class GuiOverlay extends Gui {
 
     private static final ResourceLocation GUI_ICONS = new ResourceLocation("textures/gui/icons.png");
-    private static final ResourceLocation GUI_INVENTORY = new ResourceLocation("textures/gui/container/inventory.png");
-    private static final ResourceLocation TANKS_OVERLAY = new ResourceLocation(
-            ModInfo.MOD_ID,
-            "textures/gui/overlay.png");
+    static final ResourceLocation GUI_INVENTORY = new ResourceLocation("textures/gui/container/inventory.png");
+    static final ResourceLocation TANKS_OVERLAY = new ResourceLocation(ModInfo.MOD_ID, "textures/gui/overlay.png");
     static final int BUFF_ICON_SIZE = 18;
     static final int BUFF_ICON_SPACING = 2; // 2 pixels between buff icons
     private static final int BUFF_ICON_BASE_U_OFFSET = 0;
@@ -91,7 +89,8 @@ public class GuiOverlay extends Gui {
             int yPos = getPotionIconsY(screenHeight);
 
             Collection activePotionEffects = this.mc.thePlayer.getActivePotionEffects();
-            if (!activePotionEffects.isEmpty()) {
+            if (!activePotionEffects.isEmpty()
+                    && (!LoadedMods.DASHBOARD || DashboardHud.beginPotionIcons(screenWidth, screenHeight))) {
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 GL11.glDisable(GL11.GL_LIGHTING);
                 this.mc.renderEngine.bindTexture(GUI_INVENTORY);
@@ -113,12 +112,13 @@ public class GuiOverlay extends Gui {
                                 BUFF_ICON_SIZE);
                     }
                 }
+                if (LoadedMods.DASHBOARD) DashboardHud.endRender();
             }
         }
 
         if (ConfigHandler.tanksOverlay) {
             IInventoryTanks inv = Wearing.getWearingWearableInv(player);
-            if (inv != null) {
+            if (inv != null && (!LoadedMods.DASHBOARD || DashboardHud.beginTanks(screenWidth, screenHeight))) {
                 inv.openInventory();
 
                 int textureHeight = TANK_HEIGHT;
@@ -171,6 +171,7 @@ public class GuiOverlay extends Gui {
                     }
                     RenderHelper.disableStandardItemLighting();
                 }
+                if (LoadedMods.DASHBOARD) DashboardHud.endRender();
             }
         }
         GL11.glPopAttrib();
