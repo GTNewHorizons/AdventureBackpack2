@@ -39,15 +39,15 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 public class GuiOverlay extends Gui {
 
     private static final ResourceLocation GUI_ICONS = new ResourceLocation("textures/gui/icons.png");
-    private static final ResourceLocation GUI_INVENTORY = new ResourceLocation("textures/gui/container/inventory.png");
-    private static final ResourceLocation TANKS_OVERLAY = new ResourceLocation(
-            ModInfo.MOD_ID,
-            "textures/gui/overlay.png");
-    private static final int BUFF_ICON_SIZE = 18;
-    private static final int BUFF_ICON_SPACING = 2; // 2 pixels between buff icons
+    static final ResourceLocation GUI_INVENTORY = new ResourceLocation("textures/gui/container/inventory.png");
+    static final ResourceLocation TANKS_OVERLAY = new ResourceLocation(ModInfo.MOD_ID, "textures/gui/overlay.png");
+    static final int BUFF_ICON_SIZE = 18;
+    static final int BUFF_ICON_SPACING = 2; // 2 pixels between buff icons
     private static final int BUFF_ICON_BASE_U_OFFSET = 0;
     private static final int BUFF_ICON_BASE_V_OFFSET = 198;
     private static final int BUFF_ICONS_PER_ROW = 8;
+    static final int TANK_WIDTH = 10;
+    static final int TANK_HEIGHT = 23;
 
     private static final RenderItem itemRender = new RenderItem();
 
@@ -85,22 +85,16 @@ public class GuiOverlay extends Gui {
         if (ConfigHandler.statusOverlay) {
             int xStep = ConfigHandler.statusOverlayLeft ? BUFF_ICON_SIZE + BUFF_ICON_SPACING
                     : -BUFF_ICON_SIZE - BUFF_ICON_SPACING;
-            int xPos = ConfigHandler.statusOverlayLeft ? ConfigHandler.statusOverlayIndentH
-                    : screenWidth - BUFF_ICON_SIZE - ConfigHandler.statusOverlayIndentH;
-            int yPos = ConfigHandler.statusOverlayTop ? ConfigHandler.statusOverlayIndentV
-                    : screenHeight - BUFF_ICON_SIZE - ConfigHandler.statusOverlayIndentV;
-
-            if (LoadedMods.THAUMCRAFT && ConfigHandler.statusOverlayThaumcraft
-                    && ConfigHandler.statusOverlayLeft
-                    && ConfigHandler.statusOverlayTop == !ThaumcraftUtils.DIAL_BOTTOM
-                    && ThaumcraftUtils.isTool(player.inventory.getCurrentItem())) {
-                xPos += 50; // do not overlap thaumcraft GUI
-            }
+            int xPos = getPotionIconsX(screenWidth, player);
+            int yPos = getPotionIconsY(screenHeight);
 
             Collection activePotionEffects = this.mc.thePlayer.getActivePotionEffects();
-            if (!activePotionEffects.isEmpty()) {
+            if (!activePotionEffects.isEmpty()
+                    && (!LoadedMods.DASHBOARD || DashboardHud.beginPotionIcons(screenWidth, screenHeight))) {
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 GL11.glDisable(GL11.GL_LIGHTING);
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 this.mc.renderEngine.bindTexture(GUI_INVENTORY);
 
                 for (Iterator activeEffect = activePotionEffects.iterator(); activeEffect.hasNext(); xPos += xStep) {
@@ -120,23 +114,20 @@ public class GuiOverlay extends Gui {
                                 BUFF_ICON_SIZE);
                     }
                 }
+                if (LoadedMods.DASHBOARD) DashboardHud.endRender();
             }
         }
 
         if (ConfigHandler.tanksOverlay) {
             IInventoryTanks inv = Wearing.getWearingWearableInv(player);
-            if (inv != null) {
+            if (inv != null && (!LoadedMods.DASHBOARD || DashboardHud.beginTanks(screenWidth, screenHeight))) {
                 inv.openInventory();
 
-                int textureHeight = 23;
-                int textureWidth = 10;
+                int textureHeight = TANK_HEIGHT;
+                int textureWidth = TANK_WIDTH;
 
-                int xPos = ConfigHandler.tanksOverlayRight
-                        ? screenWidth - (textureWidth * 2) - ConfigHandler.tanksOverlayIndentH
-                        : ConfigHandler.tanksOverlayIndentH;
-                int yPos = ConfigHandler.tanksOverlayBottom
-                        ? screenHeight - textureHeight - ConfigHandler.tanksOverlayIndentV
-                        : ConfigHandler.tanksOverlayIndentV;
+                int xPos = getTanksX(screenWidth);
+                int yPos = getTanksY(screenHeight);
 
                 int tankX = xPos;
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -182,9 +173,38 @@ public class GuiOverlay extends Gui {
                     }
                     RenderHelper.disableStandardItemLighting();
                 }
+                if (LoadedMods.DASHBOARD) DashboardHud.endRender();
             }
         }
         GL11.glPopAttrib();
+    }
+
+    static int getPotionIconsX(int screenWidth, EntityPlayer player) {
+        int x = ConfigHandler.statusOverlayLeft ? ConfigHandler.statusOverlayIndentH
+                : screenWidth - BUFF_ICON_SIZE - ConfigHandler.statusOverlayIndentH;
+        if (player != null && LoadedMods.THAUMCRAFT
+                && ConfigHandler.statusOverlayThaumcraft
+                && ConfigHandler.statusOverlayLeft
+                && ConfigHandler.statusOverlayTop == !ThaumcraftUtils.DIAL_BOTTOM
+                && ThaumcraftUtils.isTool(player.inventory.getCurrentItem())) {
+            x += 50; // do not overlap thaumcraft GUI
+        }
+        return x;
+    }
+
+    static int getPotionIconsY(int screenHeight) {
+        return ConfigHandler.statusOverlayTop ? ConfigHandler.statusOverlayIndentV
+                : screenHeight - BUFF_ICON_SIZE - ConfigHandler.statusOverlayIndentV;
+    }
+
+    static int getTanksX(int screenWidth) {
+        return ConfigHandler.tanksOverlayRight ? screenWidth - (TANK_WIDTH * 2) - ConfigHandler.tanksOverlayIndentH
+                : ConfigHandler.tanksOverlayIndentH;
+    }
+
+    static int getTanksY(int screenHeight) {
+        return ConfigHandler.tanksOverlayBottom ? screenHeight - TANK_HEIGHT - ConfigHandler.tanksOverlayIndentV
+                : ConfigHandler.tanksOverlayIndentV;
     }
 
     private void drawTank(FluidTank tank, int startX, int startY, int height, int width) {

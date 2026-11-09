@@ -12,6 +12,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import com.darkona.adventurebackpack.block.TileAdventureBackpack;
 import com.darkona.adventurebackpack.block.TileCampfire;
+import com.darkona.adventurebackpack.client.gui.DashboardHud;
 import com.darkona.adventurebackpack.client.gui.GuiOverlay;
 import com.darkona.adventurebackpack.client.models.ModelBackpackArmor;
 import com.darkona.adventurebackpack.client.models.ModelCoalJetpack;
@@ -54,6 +55,7 @@ public class ClientProxy implements IProxy {
         registerKeybindings();
         if (LoadedMods.TCONSTRUCT) TConstructTab.registerTab();
         MinecraftForge.EVENT_BUS.register(new GuiOverlay(Minecraft.getMinecraft()));
+        if (LoadedMods.DASHBOARD) DashboardHud.register();
 
         if (LoadedMods.NEI) {
             codechicken.nei.api.API.hideItem(new ItemStack(ModBlocks.blockBackpack, 1, OreDictionary.WILDCARD_VALUE));
