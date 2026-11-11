@@ -101,7 +101,6 @@ public class GuiOverlay extends Gui {
             if (!activePotionEffects.isEmpty()) {
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 GL11.glDisable(GL11.GL_LIGHTING);
-                this.mc.renderEngine.bindTexture(GUI_INVENTORY);
 
                 for (Iterator activeEffect = activePotionEffects.iterator(); activeEffect.hasNext(); xPos += xStep) {
                     PotionEffect potionEffect = (PotionEffect) activeEffect.next();
@@ -109,7 +108,12 @@ public class GuiOverlay extends Gui {
 
                     // yes potion should not be null here, but it sometimes does
                     // let the vanilla crash itself, no need to report this to us
-                    if (potion != null && potion.hasStatusIcon()) {
+                    if (potion == null) {
+                        continue;
+                    }
+
+                    if (potion.hasStatusIcon()) {
+                        this.mc.renderEngine.bindTexture(GUI_INVENTORY);
                         int iconIndex = potion.getStatusIconIndex();
                         this.drawTexturedModalRect(
                                 xPos,
@@ -119,6 +123,7 @@ public class GuiOverlay extends Gui {
                                 BUFF_ICON_SIZE,
                                 BUFF_ICON_SIZE);
                     }
+                    potion.renderInventoryEffect(xPos - 6, yPos - 7, potionEffect, this.mc);
                 }
             }
         }
