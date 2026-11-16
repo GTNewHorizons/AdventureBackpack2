@@ -46,8 +46,7 @@ public class ContainerBackpack extends ContainerAdventure {
             .unmodifiableSet(findCraftMatrixEmulationIDsAsSet());
 
     /**
-     * array with only the indices of the crafting grid
-     * computed at the same time as BACKPACK_INV_IDS
+     * array with only the indices of the crafting grid computed at the same time as BACKPACK_INV_IDS
      */
     private static final int[] CRAFT_MATRIX_BACKPACK_INV_IDS = new int[9];
     private static final int[] BACKPACK_INV_IDS = backpackInvIDs();
@@ -140,7 +139,7 @@ public class ContainerBackpack extends ContainerAdventure {
     @Override
     protected boolean transferStackToPack(ItemStack stack) {
         if (SlotTool.isValidTool(stack)) {
-            if (!mergeToolSlot(stack)) if (SlotBackpack.isValidItem(stack)) return mergeBackpackInv(stack ,false);
+            if (!mergeToolSlot(stack)) if (SlotBackpack.isValidItem(stack)) return mergeBackpackInv(stack, false);
         } else if (SlotFluid.isContainer(stack) && !isHoldingSpace() && !skipFluidSlots) {
             return transferFluidContainer(stack);
         } else if (SlotBackpack.isValidItem(stack)) {
@@ -178,7 +177,6 @@ public class ContainerBackpack extends ContainerAdventure {
         return mergeItemStack(stack, TOOL_START, TOOL_END + 1, false);
     }
 
-
     /**
      * @param toBackpackFirst discriminate for item moved from crafting slots to backpack slots
      */
@@ -186,7 +184,7 @@ public class ContainerBackpack extends ContainerAdventure {
         if (mergeItemStack(stack, BACKPACK_INV_IDS)) {
             return true;
         }
-        if (!toBackpackFirst) { //try with crafting slot if no item has been moved
+        if (!toBackpackFirst) { // try with crafting slot if no item has been moved
             return mergeItemStack(stack, CRAFT_MATRIX_BACKPACK_INV_IDS);
         }
         return false;
@@ -234,7 +232,7 @@ public class ContainerBackpack extends ContainerAdventure {
                 if (!isRightTankEmpty && (rightStackOut == null || areRightSameType))
                     return mergeRightBucket(container);
                 else if (leftStackOut == null && rightStackOut == null && SlotBackpack.isValidItem(container))
-                    return mergeBackpackInv(container ,false);
+                    return mergeBackpackInv(container, false);
             } else {
                 if (leftStackOut == null || areLeftSameType) return mergeLeftBucket(container);
             }
