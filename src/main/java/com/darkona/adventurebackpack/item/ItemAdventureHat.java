@@ -21,7 +21,7 @@ public class ItemAdventureHat extends ArmorAB {
     @Override
     @SideOnly(Side.CLIENT)
     public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, int armorSlot) {
-        return new ModelAdventureHat();
+        return ModelAdventureHat.instance;
     }
 
     @Override
