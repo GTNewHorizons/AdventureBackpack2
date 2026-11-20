@@ -35,7 +35,8 @@ import cpw.mods.fml.common.network.NetworkRegistry;
         name = ModInfo.MOD_NAME,
         version = ModInfo.MOD_VERSION,
         guiFactory = ModInfo.GUI_FACTORY_CLASS,
-        dependencies = "required-after:CodeChickenCore@[1.0.7.47,);" + "after:TConstruct@[1.14.4,);")
+        dependencies = "required-after:CodeChickenCore@[1.0.7.47,);" + "after:TConstruct@[1.14.4,);"
+                + "after:dashboard@[1.0.2,);")
 public class AdventureBackpack {
 
     @SidedProxy(clientSide = ModInfo.MOD_CLIENT_PROXY, serverSide = ModInfo.MOD_SERVER_PROXY)

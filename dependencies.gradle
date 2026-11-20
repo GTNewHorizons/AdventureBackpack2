@@ -5,4 +5,5 @@ dependencies {
     api("com.github.GTNewHorizons:NotEnoughItems:2.8.104-GTNH:dev")
 
     devOnlyNonPublishable("com.github.GTNewHorizons:TinkersConstruct:1.14.93-GTNH:dev")
+    compileOnly("com.github.GTNewHorizons:Dashboard:1.0.2:api")
 }
