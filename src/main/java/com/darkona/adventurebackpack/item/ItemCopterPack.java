@@ -27,6 +27,7 @@ import com.darkona.adventurebackpack.init.ModNetwork;
 import com.darkona.adventurebackpack.inventory.InventoryCopterPack;
 import com.darkona.adventurebackpack.network.GUIPacket;
 import com.darkona.adventurebackpack.network.messages.EntityParticlePacket;
+import com.darkona.adventurebackpack.playerProperties.BackpackProperty;
 import com.darkona.adventurebackpack.proxy.ClientProxy;
 import com.darkona.adventurebackpack.reference.GeneralReference;
 import com.darkona.adventurebackpack.util.BackpackUtils;
@@ -107,11 +108,18 @@ public class ItemCopterPack extends ItemAdventure {
         inv.openInventory();
         boolean canElevate = true;
         float fuelConsumption = 0.0f;
-        if (inv.getStatus() != OFF_MODE) {
+        if (inv.getStatus() == OFF_MODE) {
+            if (player.capabilities.allowFlying || player.capabilities.isFlying) {
+                player.capabilities.allowFlying = false;
+                player.capabilities.isFlying = false;
+                player.sendPlayerAbilities();
+            }
+        } else {
             if (player.isInWater()) {
-                inv.setStatus(OFF_MODE);
-                inv.dirtyStatus();
                 if (!world.isRemote) {
+                    inv.setStatus(OFF_MODE);
+                    inv.dirtyStatus();
+                    BackpackProperty.sync(player);
                     player.addChatComponentMessage(
                             new ChatComponentTranslation("adventurebackpack:messages.copterpack.cantwater"));
                 }
@@ -120,9 +128,10 @@ public class ItemCopterPack extends ItemAdventure {
             if (inv.getFuelTank().getFluidAmount() == 0) {
                 canElevate = false;
                 if (player.onGround) {
-                    inv.setStatus(OFF_MODE);
-                    inv.dirtyStatus();
                     if (!world.isRemote) {
+                        inv.setStatus(OFF_MODE);
+                        inv.dirtyStatus();
+                        BackpackProperty.sync(player);
                         player.addChatComponentMessage(
                                 new ChatComponentTranslation("adventurebackpack:messages.copterpack.off"));
                     }
@@ -130,15 +139,21 @@ public class ItemCopterPack extends ItemAdventure {
                     // TODO play "backpackOff" sound
                 }
                 if (inv.getStatus() == HOVER_MODE) {
-                    inv.setStatus(NORMAL_MODE);
-                    inv.dirtyStatus();
                     if (!world.isRemote) {
+                        inv.setStatus(OFF_MODE);
+                        inv.dirtyStatus();
+                        BackpackProperty.sync(player);
                         player.addChatComponentMessage(
                                 new ChatComponentTranslation("adventurebackpack:messages.copterpack.outoffuel"));
                     }
                     return;
                     // TODO play "outofFuel" sound
                 }
+            }
+            if (!player.capabilities.allowFlying || !player.capabilities.isFlying) {
+                player.capabilities.allowFlying = true;
+                player.capabilities.isFlying = true;
+                player.sendPlayerAbilities();
             }
         }
 
@@ -169,19 +184,15 @@ public class ItemCopterPack extends ItemAdventure {
                         new EntityParticlePacket.Message(EntityParticlePacket.COPTER_PARTICLE, player),
                         player);
             }
-            // Sound
-
-            float factor = 0.05f;
             if (!player.onGround) {
-                // Airwave
+                // Airwaves
                 pushEntities(world, player, 0.2f);
                 // movement boost
-                player.moveFlying(player.moveStrafing, player.moveForward, factor);
+                player.moveFlying(player.moveStrafing, player.moveForward, 0.05f);
             } else {
-                pushEntities(world, player, factor + 0.4f);
+                pushEntities(world, player, 0.45f);
             }
 
-            // Elevation clientside
             if (world.isRemote) {
                 if (Minecraft.getMinecraft().gameSettings.keyBindJump.getIsKeyPressed()) {
                     if (inv.canConsumeFuel((int) Math.ceil(fuelConsumption * 2)) && canElevate) {
@@ -190,21 +201,23 @@ public class ItemCopterPack extends ItemAdventure {
                 }
             }
 
-            // Elevation serverside
-            if (!player.onGround && player.motionY > 0) {
-                fuelConsumption *= 2;
-            }
-            int ticks = inv.getTickCounter() - 1;
-            FluidTank tank = inv.getFuelTank();
-            if (tank.getFluid() != null && GeneralReference.isValidFuel(tank.getFluid().getFluid().getName())) {
-                fuelConsumption = fuelConsumption * GeneralReference.getFuelRate(tank.getFluid().getFluid().getName());
-            }
-            if (ticks <= 0) {
-                inv.setTickCounter(3);
-                inv.consumeFuel(getFuelSpent(fuelConsumption));
-                inv.dirtyTanks();
-            } else {
-                inv.setTickCounter(ticks);
+            if (!world.isRemote) {
+                if (!player.onGround && player.motionY > 0) {
+                    fuelConsumption *= 2;
+                }
+                int ticks = inv.getTickCounter() - 1;
+                FluidTank tank = inv.getFuelTank();
+                if (tank.getFluid() != null && GeneralReference.isValidFuel(tank.getFluid().getFluid().getName())) {
+                    fuelConsumption = fuelConsumption
+                            * GeneralReference.getFuelRate(tank.getFluid().getFluid().getName());
+                }
+                if (ticks <= 0) {
+                    inv.setTickCounter(3);
+                    inv.consumeFuel(getFuelSpent(fuelConsumption));
+                    inv.dirtyTanks();
+                } else {
+                    inv.setTickCounter(ticks);
+                }
             }
         }
         inv.closeInventory();
